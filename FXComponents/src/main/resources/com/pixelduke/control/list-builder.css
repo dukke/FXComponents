@@ -1,0 +1,26 @@
+
+.list-builder .source-header-container {
+    -fx-padding: 5px;
+}
+
+.list-builder .source-header-container .label {
+    -fx-font-size: 1.166667em;
+}
+
+.list-builder .target-header-container {
+    -fx-padding: 5px;
+}
+
+.list-builder .target-header-container .label {
+    -fx-font-size: 1.166667em;
+}
+
+.list-builder .list-view {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+}
+
+.list-builder .remove-button-container {
+    -fx-padding: 10px 0 0 0;
+}
+

@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+mainClassName = 'com.pixelduke.control.ListBuilderSample'
+
+dependencies {
+    compile project(':fxcomponents')
+//    compile name: 'ScenicView'
+    implementation 'org.jfxtras:jmetro:11.6.15'
+}
+
+repositories {
+    mavenCentral()
+//    flatDir {
+//        dirs '../lib'
+//    }
+}

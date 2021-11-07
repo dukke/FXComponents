@@ -1,0 +1,488 @@
+package impl.java.pixelduke.control;
+
+import com.pixelduke.control.ListBuilder;
+import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static javafx.scene.control.SelectionMode.MULTIPLE;
+import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
+
+public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
+    private static Object draggedItem;
+    private static ListView<?> sourceDragListView;
+
+    private final GridPane gridPane = new GridPane();
+
+    private final ListView<T> sourceListView = new ListView<>();
+    private final ListView<T> targetListView = new ListView<>();
+
+    private final Button addButton = new Button("Add");
+    private final Button removeButton = new Button("Remove");
+    private final Button addAllButton = new Button("Add All");
+    private final Button removeAllButton = new Button("Remove All");
+
+    private final Button moveUpButton = new Button("Move Up");
+    private final Button moveDownButton = new Button("Move Down");
+
+
+    public ListBuilderSkin(ListBuilder<T> listBuilder) {
+        super(listBuilder);
+
+        initGridPane();
+        initListViews();
+        initButtons();
+
+        getChildren().add(gridPane);
+
+        updateView();
+
+        sourceListView.addEventHandler(MOUSE_CLICKED, event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                moveToTargetList();
+            }
+        });
+
+        targetListView.addEventHandler(MOUSE_CLICKED, event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                moveToSourceList();
+            }
+        });
+
+//        targetListView.setOnDragOver(event -> {
+//            if (targetListView.getItems().size() != 0) {
+//                return;
+//            }
+//
+//            if (event.getDragboard().hasString()) {
+//                event.acceptTransferModes(TransferMode.MOVE);
+//            }
+//
+//            event.consume();
+//        });
+//
+//        targetListView.setOnDragDropped(event -> {
+//            if (targetListView.getItems().size() != 0) {
+//                return;
+//            }
+//
+//            Dragboard dragBoard = event.getDragboard();
+//            boolean success = false;
+//
+//            if (dragBoard.hasString()) {
+//                move(sourceDragListView, targetListView, List.of(draggedItem));
+//                success = true;
+//            }
+//            event.setDropCompleted(success);
+//
+////            event.consume();
+//
+//            clearAndSelectElements(targetListView, (List<T>) List.of(draggedItem));
+//            sourceDragListView.getSelectionModel().clearSelection();
+//        });
+
+//        sourceListView.setOnDragOver(event -> {
+//            if (sourceListView.getItems().size() != 0) {
+//                return;
+//            }
+//
+//            if (event.getDragboard().hasString()) {
+//                event.acceptTransferModes(TransferMode.MOVE);
+//            }
+//
+//            event.consume();
+//        });
+//
+//        sourceListView.setOnDragDropped(event -> {
+//            if (sourceListView.getItems().size() != 0) {
+//                return;
+//            }
+//
+//            Dragboard dragBoard = event.getDragboard();
+//            boolean success = false;
+//
+//            if (dragBoard.hasString()) {
+//                move(targetListView, sourceDragListView, List.of(draggedItem));
+//                success = true;
+//            }
+//            event.setDropCompleted(success);
+//
+//            event.consume();
+//        });
+        sourceListView.getSelectionModel().selectedItemProperty().addListener(observable -> updateAddEnabledState());
+        sourceListView.getItems().addListener((ListChangeListener<? super T>) changed -> updateAddAllEnabledState());
+        targetListView.getSelectionModel().selectedItemProperty().addListener(observable -> {
+            updateRemoveEnabledState();
+            updateMoveUpEnabledState();
+            updateMoveDownEnabledState();
+        });
+        targetListView.getItems().addListener((ListChangeListener<? super T>) changed -> updateRemoveAllEnabledState());
+
+        updateAddEnabledState();
+        updateRemoveEnabledState();
+        updateAddAllEnabledState();
+        updateRemoveAllEnabledState();
+
+        updateMoveUpEnabledState();
+        updateMoveDownEnabledState();
+
+        sourceListView.getSelectionModel().selectAll();
+
+        // CSS
+        gridPane.getStyleClass().add("main-container");
+
+    }
+
+    private void initButtons() {
+        addButton.setContentDisplay(ContentDisplay.RIGHT);
+        addAllButton.setContentDisplay(ContentDisplay.RIGHT);
+
+        addButton.setOnAction(actionEvent -> move(sourceListView, targetListView));
+        removeButton.setOnAction(actionEvent -> move(targetListView, sourceListView));
+        moveUpButton.setOnAction(actionEvent -> moveSelectedElementsUp(targetListView));
+        moveDownButton.setOnAction(actionEvent -> moveSelectedElementsDown(targetListView));
+
+        addAllButton.setOnAction(actionEvent -> move(sourceListView, targetListView, List.copyOf(sourceListView.getItems())));
+        removeAllButton.setOnAction(actionEvent -> move(targetListView, sourceListView, List.copyOf(targetListView.getItems())));
+    }
+
+    private void initListViews() {
+        sourceListView.getStyleClass().add("source-list-view");
+        targetListView.getStyleClass().add("target-list-view");
+
+        sourceListView.setCellFactory(param -> new DraggableCell<>());
+        targetListView.setCellFactory(param -> new DraggableCell<>());
+
+        Bindings.bindContentBidirectional(sourceListView.getItems(), getSkinnable().getSourceItems());
+        Bindings.bindContentBidirectional(targetListView.getItems(), getSkinnable().getTargetItems());
+
+        sourceListView.getSelectionModel().setSelectionMode(MULTIPLE);
+        targetListView.getSelectionModel().setSelectionMode(MULTIPLE);
+    }
+
+    private void initGridPane() {
+        gridPane.getStyleClass().add("grid-pane");
+        setHorizontalViewConstraints();
+    }
+
+    private void moveSelectedElementsUp(ListView<T> listView) {
+        List<T> selectedElements = List.copyOf(listView.getSelectionModel().getSelectedItems());
+
+        for (T element : selectedElements) {
+            int index = listView.getItems().indexOf(element);
+            if (index != 0) {
+                listView.getItems().remove(element);
+                listView.getItems().add(index - 1, element);
+            }
+        }
+
+        clearAndSelectElements(listView, selectedElements);
+    }
+
+    private void moveSelectedElementsDown(ListView<T> listView) {
+        List<T> selectedElements = List.copyOf(listView.getSelectionModel().getSelectedItems());
+
+        for (int index = selectedElements.size() - 1; index >= 0; index--) {
+            T element = selectedElements.get(index);
+
+            int elementIndexOnList = listView.getItems().indexOf(element);
+            if (elementIndexOnList < listView.getItems().size() - 1) {
+                listView.getItems().remove(element);
+                listView.getItems().add(elementIndexOnList + 1, element);
+            }
+        }
+
+        clearAndSelectElements(listView, selectedElements);
+    }
+
+    // Constraints used when view's orientation is HORIZONTAL
+    private void setHorizontalViewConstraints() {
+        ColumnConstraints col1 = new ColumnConstraints();
+
+        col1.setFillWidth(true);
+        col1.setHgrow(Priority.ALWAYS);
+        col1.setMaxWidth(Double.MAX_VALUE);
+        col1.setPrefWidth(200);
+
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setFillWidth(true);
+        col2.setHgrow(Priority.NEVER);
+
+        ColumnConstraints col3 = new ColumnConstraints();
+        col3.setFillWidth(true);
+        col3.setHgrow(Priority.ALWAYS);
+        col3.setMaxWidth(Double.MAX_VALUE);
+        col3.setPrefWidth(200);
+
+        gridPane.getColumnConstraints().setAll(col1, col2, col3);
+
+        RowConstraints row1 = new RowConstraints();
+        row1.setFillHeight(true);
+        row1.setVgrow(Priority.NEVER);
+
+        RowConstraints row2 = new RowConstraints();
+        row2.setMaxHeight(Double.MAX_VALUE);
+        row2.setPrefHeight(200);
+        row2.setVgrow(Priority.ALWAYS);
+
+        RowConstraints row3 = new RowConstraints();
+        row3.setFillHeight(true);
+        row3.setVgrow(Priority.NEVER);
+
+        gridPane.setHgap(5);
+
+        gridPane.getRowConstraints().setAll(row1, row2, row3);
+    }
+
+    // Used when view's orientation is HORIZONTAL
+    private VBox createListElementsMoveControls() {
+        VBox box = new VBox(5);
+        box.setFillWidth(true);
+        box.setAlignment(Pos.CENTER);
+
+        StackPane addButtonContainer = new StackPane(addButton);
+        StackPane addAllButtonContainer = new StackPane(addAllButton);
+        StackPane removeButtonContainer = new StackPane(removeButton);
+        StackPane removeAllButtonContainer = new StackPane(removeAllButton);
+
+        addButton.setMaxWidth(Double.MAX_VALUE);
+        addButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("more-than-16.png")).toExternalForm()));
+        addAllButton.setMaxWidth(Double.MAX_VALUE);
+        addAllButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("double-right-16.png")).toExternalForm()));
+        removeButton.setMaxWidth(Double.MAX_VALUE);
+        removeButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("less-than-16.png")).toExternalForm()));
+        removeAllButton.setMaxWidth(Double.MAX_VALUE);
+        removeAllButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("double-left-16.png")).toExternalForm()));
+
+        box.getChildren().addAll(addButtonContainer, addAllButtonContainer, removeButtonContainer, removeAllButtonContainer);
+
+        // CSS
+        addButtonContainer.getStyleClass().add("add-button-container");
+        addAllButtonContainer.getStyleClass().add("add-all-button-container");
+        removeButtonContainer.getStyleClass().add("remove-button-container");
+        removeAllButtonContainer.getStyleClass().add("remove-all-button-container");
+
+        return box;
+    }
+
+    private Pane createTargetListControls() {
+        moveUpButton.setMaxWidth(Double.MAX_VALUE);
+        moveUpButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("up-16.png")).toExternalForm()));
+        moveDownButton.setMaxWidth(Double.MAX_VALUE);
+        moveDownButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("down-16.png")).toExternalForm()));
+
+//        container.setTop(removeAllButton);
+
+        VBox box = new VBox(5);
+        box.setFillWidth(true);
+        box.setAlignment(Pos.CENTER);
+
+        box.getChildren().addAll(moveUpButton, moveDownButton);
+
+//        box.getChildren().addAll(moveUpButton, moveDownButton, resetButton);
+
+        return box;
+    }
+
+    private void updateView() {
+        gridPane.getChildren().clear();
+
+        Node sourceHeader = getSkinnable().getSourceHeader();
+        Node targetHeader = getSkinnable().getTargetHeader();
+
+        VBox sourceHeaderContainer = new VBox(sourceHeader);
+        VBox targetHeaderContainer = new VBox(targetHeader);
+
+        setHorizontalViewConstraints();
+
+        if (sourceHeader != null) {
+            gridPane.add(sourceHeaderContainer, 0, 0);
+        }
+
+        if (targetHeader != null) {
+            gridPane.add(targetHeaderContainer, 2, 0);
+        }
+
+        gridPane.add(sourceListView, 0, 1);
+        gridPane.add(targetListView, 2, 1);
+
+        StackPane elementsMoveTargetListViewPane = new StackPane();
+        elementsMoveTargetListViewPane.setAlignment(Pos.CENTER);
+        elementsMoveTargetListViewPane.getChildren().add(createListElementsMoveControls());
+        gridPane.add(elementsMoveTargetListViewPane, 1, 1);
+
+        StackPane targetListControlsPane = new StackPane();
+        targetListControlsPane.setAlignment(Pos.CENTER);
+        targetListControlsPane.getChildren().add(createTargetListControls());
+        gridPane.add(targetListControlsPane, 3, 1);
+
+        // CSS
+        sourceHeaderContainer.getStyleClass().add("source-header-container");
+        targetHeaderContainer.getStyleClass().add("target-header-container");
+    }
+
+    private void moveToTargetList() {
+        move(sourceListView, targetListView);
+        sourceListView.getSelectionModel().clearSelection();
+    }
+
+    private void moveToSourceList() {
+        move(targetListView, sourceListView);
+        targetListView.getSelectionModel().clearSelection();
+    }
+
+    private static <D> void move(ListView<?> listViewA, ListView<?> listViewB) {
+        List<?> selectedItems = new ArrayList<>(listViewA.getSelectionModel().getSelectedItems());
+        move(listViewA, listViewB, selectedItems);
+    }
+
+    private static <D> void move(ListView<?> viewA, ListView<?> viewB, List items) {
+        viewA.getItems().removeAll(items);
+        viewB.getItems().addAll(items);
+    }
+
+    private static <E> void clearAndSelectElements(ListView<E> listView, List<E> elementsToSelect) {
+        listView.getSelectionModel().clearSelection();
+        for (E element : elementsToSelect) {
+            int index = listView.getItems().indexOf(element);
+            listView.getSelectionModel().select(index);
+        }
+    }
+
+    private void updateAddEnabledState() {
+        boolean areSourceListItemsSelected = sourceListView.getSelectionModel().getSelectedItems().size() > 0;
+        addButton.setDisable(!areSourceListItemsSelected);
+    }
+
+    private void updateRemoveEnabledState() {
+        boolean areTargetListItemsSelected = targetListView.getSelectionModel().getSelectedItems().size() > 0;
+        removeButton.setDisable(!areTargetListItemsSelected);
+    }
+
+    private void updateAddAllEnabledState() {
+        boolean isSourceListEmpty = sourceListView.getItems().size() == 0;
+        addAllButton.setDisable(isSourceListEmpty);
+    }
+
+    private void updateRemoveAllEnabledState() {
+        boolean isTargetListEmpty = targetListView.getItems().size() == 0;
+        removeAllButton.setDisable(isTargetListEmpty);
+    }
+
+    private void updateMoveUpEnabledState() {
+        boolean isTargetListItemSelected = targetListView.getSelectionModel().getSelectedItems().size() > 0;
+        moveUpButton.setDisable(!isTargetListItemSelected);
+    }
+
+    private void updateMoveDownEnabledState() {
+        boolean isTargetListItemSelected = targetListView.getSelectionModel().getSelectedItems().size() > 0;
+        moveDownButton.setDisable(!isTargetListItemSelected);
+    }
+
+    private static class DraggableCell<E> extends ListCell<E> {
+        public DraggableCell() {
+            ListCell<?> thisCell = this;
+
+            setOnDragDetected(event -> {
+                if (getItem() == null) {
+                    return;
+                }
+
+                Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
+
+                ClipboardContent content = new ClipboardContent();
+                content.putString(getItem().toString());
+
+                draggedItem = getItem();
+                sourceDragListView = getListView();
+
+                WritableImage snapshot = this.snapshot(new SnapshotParameters(), null);
+
+                dragboard.setDragView(snapshot);
+                dragboard.setContent(content);
+
+                event.consume();
+            });
+
+            setOnDragOver(event -> {
+                if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
+                    event.acceptTransferModes(TransferMode.MOVE);
+                }
+
+                event.consume();
+            });
+
+            setOnDragEntered(event -> {
+                if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
+                    setOpacity(0.3);
+                }
+            });
+
+            setOnDragExited(event -> {
+                if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
+                    setOpacity(1);
+                }
+                setPressed(false);
+            });
+
+            setOnDragDropped(event -> {
+                Dragboard dragBoard = event.getDragboard();
+                boolean success = false;
+
+                if (dragBoard.hasString()) {
+                    ObservableList<E> items = getListView().getItems();
+
+                    int draggedIdx = items.indexOf(draggedItem);
+                    int thisIdx = items.indexOf(getItem());
+
+                    if (sourceDragListView == getListView()) {
+                        if (!isEmpty()) {
+                            items.set(draggedIdx, getItem());
+                            items.set(thisIdx, (E)draggedItem);
+                        } else {
+                            items.remove(draggedItem);
+                            items.add((E)draggedItem);
+                        }
+                    }
+                    if (sourceDragListView != getListView()) {
+                        move(sourceDragListView, getListView(), List.of(draggedItem));
+                    }
+
+                    success = true;
+                }
+                event.setDropCompleted(success);
+
+                event.consume();
+
+                clearAndSelectElements(getListView(), (List<E>) List.of(draggedItem));
+            });
+
+            setOnDragDone(DragEvent::consume);
+        }
+
+        @Override
+        protected void updateItem(E item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.toString());
+                setGraphic(getGraphic());
+            }
+        }
+    }
+}
