@@ -5,8 +5,20 @@ plugins {
 }
 
 version = '1.0.0'
+
 def versionDescription = 'FXComponents'
 
+ext {
+    projectDescription = 'A collection of new controls for JavaFX.'
+
+    licenseName = 'GNU General Public License, version 2, with the Classpath Exception'
+    licenseURL = 'https://openjdk.java.net/legal/gplv2+ce.html'
+
+    versionControlOriginURL = 'https://github.com/dukke/FXComponents.git'
+    issueTrackerURL = 'https://github.com/dukke/FXComponents/issues'
+
+    projectURL = 'https://github.com/dukke/FXComponent'
+}
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -112,22 +124,22 @@ def customizePom(pom) {
         root.children().last() + {
             resolveStrategy = Closure.DELEGATE_FIRST
 
-            description "A theme / look and feel for JavaFX inspired (but not a copy) by Microsoft's Fluent Design"
+            description projectDescription
             name project.name
-            url 'https://pixelduke.com/java-javafx-theme-jmetro/'
+            url projectURL
             issueManagement {
                 system 'GitHub'
-                url 'https://github.com/JFXtras/jfxtras-styles/issues'
+                url issueTrackerURL
             }
             licenses {
                 license {
-                    name 'BSD New'
-                    url 'https://opensource.org/licenses/BSD-3-Clause'
+                    name licenseName
+                    url licenseURL
                     distribution 'repo'
                 }
             }
             scm {
-                url 'https://github.com/JFXtras/jfxtras-styles.git'
+                url versionControlOriginURL
             }
             developers {
                 developer {
