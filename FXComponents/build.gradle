@@ -2,6 +2,7 @@ plugins {
     id 'signing'
     id "java-library"
     id "maven-publish"
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 version = '1.0.0'
@@ -20,11 +21,16 @@ ext {
     projectURL = 'https://github.com/dukke/FXComponent'
 }
 
+javafx {
+    version = "16"
+    modules = [ 'javafx.controls' ]
+}
+
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-dependencies {
+//dependencies {
 //    implementation 'org.controlsfx:controlsfx:8.40.14'
-}
+//}
 
 repositories {
     mavenCentral()
@@ -32,13 +38,13 @@ repositories {
 
 jar {
     manifest {
-        attributes( 'Implementation-Title':     project.name,
-                'Implementation-Version':   project.version)
+        attributes( 'Implementation-Title': project.name,
+                'Implementation-Version': project.version)
     }
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
+    archiveClassifier  = 'javadoc'
     from javadoc
 }
 

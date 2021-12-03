@@ -1,6 +1,18 @@
-apply plugin: 'application'
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
 
-mainClassName = 'com.pixelduke.control.ListBuilderSample'
+javafx {
+    version = "16"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web', 'javafx.graphics' ]
+}
+
+application {
+    mainClassName = 'com.pixelduke.control.ReordableListViewDragAndDropSample'
+//    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
+//    mainClassName = 'com.pixelduke.control.ListBuilderSample'
+}
 
 dependencies {
     compile project(':fxcomponents')

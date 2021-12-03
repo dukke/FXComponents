@@ -37,6 +37,11 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
     private final Button moveUpButton = new Button("Move Up");
     private final Button moveDownButton = new Button("Move Down");
 
+    /*=========================================================================*
+     *                                                                         *
+     *                        CONSTRUCTORS                                     *
+     *                                                                         *
+     *=========================================================================*/
 
     public ListBuilderSkin(ListBuilder<T> listBuilder) {
         super(listBuilder);
@@ -49,6 +54,7 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
 
         updateView();
 
+        // Setup double click on lists
         sourceListView.addEventHandler(MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 moveToTargetList();
@@ -145,6 +151,12 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
 
     }
 
+    /*=========================================================================*
+     *                                                                         *
+     *                        PRIVATE API                                      *
+     *                                                                         *
+     *=========================================================================*/
+
     private void initButtons() {
         addButton.setContentDisplay(ContentDisplay.RIGHT);
         addAllButton.setContentDisplay(ContentDisplay.RIGHT);
@@ -174,7 +186,7 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
 
     private void initGridPane() {
         gridPane.getStyleClass().add("grid-pane");
-        setHorizontalViewConstraints();
+        setViewConstraints();
     }
 
     private void moveSelectedElementsUp(ListView<T> listView) {
@@ -207,8 +219,7 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         clearAndSelectElements(listView, selectedElements);
     }
 
-    // Constraints used when view's orientation is HORIZONTAL
-    private void setHorizontalViewConstraints() {
+    private void setViewConstraints() {
         ColumnConstraints col1 = new ColumnConstraints();
 
         col1.setFillWidth(true);
@@ -246,7 +257,6 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         gridPane.getRowConstraints().setAll(row1, row2, row3);
     }
 
-    // Used when view's orientation is HORIZONTAL
     private VBox createListElementsMoveControls() {
         VBox box = new VBox(5);
         box.setFillWidth(true);
@@ -283,15 +293,11 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         moveDownButton.setMaxWidth(Double.MAX_VALUE);
         moveDownButton.setGraphic(new ImageView(Objects.requireNonNull(ListBuilder.class.getResource("down-16.png")).toExternalForm()));
 
-//        container.setTop(removeAllButton);
-
         VBox box = new VBox(5);
         box.setFillWidth(true);
         box.setAlignment(Pos.CENTER);
 
         box.getChildren().addAll(moveUpButton, moveDownButton);
-
-//        box.getChildren().addAll(moveUpButton, moveDownButton, resetButton);
 
         return box;
     }
@@ -305,7 +311,7 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         VBox sourceHeaderContainer = new VBox(sourceHeader);
         VBox targetHeaderContainer = new VBox(targetHeader);
 
-        setHorizontalViewConstraints();
+        setViewConstraints();
 
         if (sourceHeader != null) {
             gridPane.add(sourceHeaderContainer, 0, 0);
@@ -343,12 +349,12 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         targetListView.getSelectionModel().clearSelection();
     }
 
-    private static <D> void move(ListView<?> listViewA, ListView<?> listViewB) {
+    private static void move(ListView<?> listViewA, ListView<?> listViewB) {
         List<?> selectedItems = new ArrayList<>(listViewA.getSelectionModel().getSelectedItems());
         move(listViewA, listViewB, selectedItems);
     }
 
-    private static <D> void move(ListView<?> viewA, ListView<?> viewB, List items) {
+    private static void move(ListView<?> viewA, ListView<?> viewB, List items) {
         viewA.getItems().removeAll(items);
         viewB.getItems().addAll(items);
     }
@@ -391,11 +397,19 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         moveDownButton.setDisable(!isTargetListItemSelected);
     }
 
+    /*=========================================================================*
+     *                                                                         *
+     *                      SUPPORTING CLASSES                                 *
+     *                                                                         *
+     *=========================================================================*/
+
     private static class DraggableCell<E> extends ListCell<E> {
+
         public DraggableCell() {
             ListCell<?> thisCell = this;
 
             setOnDragDetected(event -> {
+                System.out.println("-------DRAG DETECTED: " + this.getListView());
                 if (getItem() == null) {
                     return;
                 }
@@ -417,6 +431,7 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             });
 
             setOnDragOver(event -> {
+                System.out.println("-DRAG OVER: " + this.getListView());
                 if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
                     event.acceptTransferModes(TransferMode.MOVE);
                 }
@@ -425,12 +440,14 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             });
 
             setOnDragEntered(event -> {
+                System.out.println("--DRAG ENTERED: " + this.getListView());
                 if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
                     setOpacity(0.3);
                 }
             });
 
             setOnDragExited(event -> {
+                System.out.println("-DRAG EXITED: " + this.getListView());
                 if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
                     setOpacity(1);
                 }
@@ -438,6 +455,7 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             });
 
             setOnDragDropped(event -> {
+                System.out.println("-DRAG DROPPED:" + this.getListView());
                 Dragboard dragBoard = event.getDragboard();
                 boolean success = false;
 
