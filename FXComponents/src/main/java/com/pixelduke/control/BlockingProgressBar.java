@@ -221,6 +221,12 @@ public class BlockingProgressBar {
                   || task.getState() == Worker.State.FAILED
                   || task.getState() == Worker.State.SUCCEEDED) {
                 Platform.runLater(this::hide);
+
+                if (task.getState() == Worker.State.FAILED) {
+                    // If the task fails we rethrow the exception, otherwise it will get eaten and nothing will show
+                    // in the app using this library (no exception information will show)
+                    throw new RuntimeException(task.getException());
+                }
             }
         });
 
