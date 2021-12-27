@@ -65,9 +65,6 @@ public class ReordableListViewDragAndDropSample extends Application {
         private static final String tempPlaceholderItem = "ADDED FROM OUTSIDE SOURCE";
         private static boolean hasAddedTempItem = false;
 
-        private static int previousDropTargetIndex = -1;
-        private static CustomListViewCell previousDropTargetCell;
-
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
@@ -79,47 +76,6 @@ public class ReordableListViewDragAndDropSample extends Application {
                 setText(item);
                 setGraphic(null);
             }
-        }
-
-        @Override
-        protected void onDragEnteredFromOutsideSource(DragEvent dragEvent) {
-            ListView<String> listView = getListView();
-
-            String currItem = getItem();
-            int indexOfCurrItem = listView.getItems().indexOf(currItem);
-
-            if (!hasAddedTempItem) {
-                listView.getItems().add(indexOfCurrItem, tempPlaceholderItem);
-                hasAddedTempItem = true;
-            }
-
-            if (isEmpty()) {
-                return;
-            }
-
-            setIsDropTargetCell(true);
-            if (previousDropTargetCell != null) {
-                previousDropTargetCell.setIsDropTargetCell(false);
-
-                if (indexOfCurrItem > previousDropTargetIndex) {
-                    listView.getItems().set(indexOfCurrItem - 1, currItem);
-                    listView.getItems().set(indexOfCurrItem, tempPlaceholderItem);
-                } else if (indexOfCurrItem < previousDropTargetIndex){
-                    listView.getItems().set(indexOfCurrItem + 1, currItem);
-                    listView.getItems().set(indexOfCurrItem, tempPlaceholderItem);
-                }
-            } else {
-                // First time entering this Node from outside
-                if (indexOfCurrItem < listView.getItems().size() - 1) {
-                    listView.getItems().add(indexOfCurrItem + 1, currItem);
-                    listView.getItems().remove(tempPlaceholderItem);
-                    listView.getItems().set(indexOfCurrItem, tempPlaceholderItem);
-                }
-            }
-            previousDropTargetCell = this;
-            previousDropTargetIndex = indexOfCurrItem;
-
-            updateItem(currItem, isEmpty());
         }
 
         @Override
@@ -141,9 +97,13 @@ public class ReordableListViewDragAndDropSample extends Application {
             listView.getItems().set(indexOfPlaceholder, text);
 
             hasAddedTempItem = false;
-            previousDropTargetCell = null;
 
             return true;
+        }
+
+        @Override
+        protected String getPlaceholderItem() {
+            return tempPlaceholderItem;
         }
     }
 

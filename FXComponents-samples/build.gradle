@@ -9,8 +9,8 @@ javafx {
 }
 
 application {
-    mainClassName = 'com.pixelduke.control.ReordableListViewDragAndDropSample'
-//    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
+//    mainClassName = 'com.pixelduke.control.ReordableListViewDragAndDropSample'
+    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
 //    mainClassName = 'com.pixelduke.control.ListBuilderSample'
 }
 

@@ -30,9 +30,13 @@ public class ReordableListView<T> extends ListView<T> {
 
         protected boolean isDropTargetCell = false;
 
+        private static final String tempPlaceholderItem = "ADDED FROM OUTSIDE SOURCE";
+        private static boolean hasAddedTempItem = false;
+
+        private static int previousDropTargetIndex = -1;
+
         public DraggableCell() {
             setOnDragDetected(event -> {
-                System.out.println("-------DRAG DETECTED");
                 if (getItem() == null) {
                     return;
                 }
@@ -59,18 +63,13 @@ public class ReordableListView<T> extends ListView<T> {
             });
 
             addEventHandler(DragEvent.DRAG_OVER, event -> {
-                System.out.println("-DRAG OVER");
                 event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             });
 
-            setOnDragExited(event -> {
-                System.out.println("-DRAG EXITED");
-                setPressed(false);
-            });
+            setOnDragExited(event -> setPressed(false));
 
             setOnDragDropped(event -> {
-                System.out.println("-DRAG DROPPED");
                 Dragboard dragBoard = event.getDragboard();
                 boolean success = false;
 
@@ -99,8 +98,6 @@ public class ReordableListView<T> extends ListView<T> {
             });
 
             addEventHandler(DragEvent.DRAG_ENTERED, event -> {
-
-                System.out.println("--DRAG ENTERED");
                 boolean dragEnteredFromOutsideSource = false;
 
                 if (event.getGestureSource() instanceof DraggableCell) {
@@ -155,6 +152,10 @@ public class ReordableListView<T> extends ListView<T> {
             }
         }
 
+        protected E getPlaceholderItem() {
+            return null;
+        }
+
         protected Image createDragView(E item, boolean empty) {
             return this.snapshot(new SnapshotParameters(), null);
         }
@@ -165,7 +166,43 @@ public class ReordableListView<T> extends ListView<T> {
         }
 
         protected void onDragEnteredFromOutsideSource(DragEvent dragEvent) {
+            ListView<E> listView = getListView();
 
+            E currItem = getItem();
+            int indexOfCurrItem = listView.getItems().indexOf(currItem);
+
+            if (!hasAddedTempItem) {
+                listView.getItems().add(indexOfCurrItem, getPlaceholderItem());
+                hasAddedTempItem = true;
+            }
+
+            if (isEmpty()) {
+                return;
+            }
+
+            setIsDropTargetCell(true);
+            if (previousDropTargetCell != null) {
+                previousDropTargetCell.setIsDropTargetCell(false);
+
+                if (indexOfCurrItem > previousDropTargetIndex) {
+                    listView.getItems().set(indexOfCurrItem - 1, currItem);
+                    listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
+                } else if (indexOfCurrItem < previousDropTargetIndex){
+                    listView.getItems().set(indexOfCurrItem + 1, currItem);
+                    listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
+                }
+            } else {
+                // First time entering this Node from outside
+                if (indexOfCurrItem < listView.getItems().size() - 1) {
+                    listView.getItems().add(indexOfCurrItem + 1, currItem);
+                    listView.getItems().remove(tempPlaceholderItem);
+                    listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
+                }
+            }
+            previousDropTargetCell = this;
+            previousDropTargetIndex = indexOfCurrItem;
+
+            updateItem(currItem, isEmpty());
         }
 
         protected void onDragExitedFromOutsideSource(DragEvent dragEvent) {

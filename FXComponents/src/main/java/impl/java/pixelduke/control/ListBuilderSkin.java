@@ -409,7 +409,6 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             ListCell<?> thisCell = this;
 
             setOnDragDetected(event -> {
-                System.out.println("-------DRAG DETECTED: " + this.getListView());
                 if (getItem() == null) {
                     return;
                 }
@@ -431,7 +430,6 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             });
 
             setOnDragOver(event -> {
-                System.out.println("-DRAG OVER: " + this.getListView());
                 if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
                     event.acceptTransferModes(TransferMode.MOVE);
                 }
@@ -440,14 +438,12 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             });
 
             setOnDragEntered(event -> {
-                System.out.println("--DRAG ENTERED: " + this.getListView());
                 if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
                     setOpacity(0.3);
                 }
             });
 
             setOnDragExited(event -> {
-                System.out.println("-DRAG EXITED: " + this.getListView());
                 if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
                     setOpacity(1);
                 }
@@ -455,7 +451,6 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             });
 
             setOnDragDropped(event -> {
-                System.out.println("-DRAG DROPPED:" + this.getListView());
                 Dragboard dragBoard = event.getDragboard();
                 boolean success = false;
 
