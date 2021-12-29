@@ -1,15 +1,14 @@
 package impl.java.pixelduke.control;
 
 import com.pixelduke.control.ListBuilder;
+import com.pixelduke.control.ReordableListView;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 
@@ -21,13 +20,15 @@ import static javafx.scene.control.SelectionMode.MULTIPLE;
 import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
 public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
+    public static final DataFormat LIST_BUILDER_DATA_FORMAT = new DataFormat("impl.java.pixelduke.control.ListBuilderSkin");
+
     private static Object draggedItem;
     private static ListView<?> sourceDragListView;
 
     private final GridPane gridPane = new GridPane();
 
-    private final ListView<T> sourceListView = new ListView<>();
-    private final ListView<T> targetListView = new ListView<>();
+    private final ReordableListView<T> sourceListView = new ReordableListView<>();
+    private final ReordableListView<T> targetListView = new ReordableListView<>();
 
     private final Button addButton = new Button("Add");
     private final Button removeButton = new Button("Remove");
@@ -174,8 +175,8 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         sourceListView.getStyleClass().add("source-list-view");
         targetListView.getStyleClass().add("target-list-view");
 
-        sourceListView.setCellFactory(param -> new DraggableCell<>());
-        targetListView.setCellFactory(param -> new DraggableCell<>());
+        sourceListView.setCellFactory(param -> new ListBuilderCell<>(getSkinnable()));
+        targetListView.setCellFactory(param -> new ListBuilderCell<>(getSkinnable()));
 
         Bindings.bindContentBidirectional(sourceListView.getItems(), getSkinnable().getSourceItems());
         Bindings.bindContentBidirectional(targetListView.getItems(), getSkinnable().getTargetItems());
@@ -359,6 +360,11 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
         viewB.getItems().addAll(items);
     }
 
+    private static void move(ListView<?> viewA, ListView<?> viewB, List items, int destinationIndex) {
+        viewA.getItems().removeAll(items);
+        viewB.getItems().addAll(destinationIndex, items);
+    }
+
     private static <E> void clearAndSelectElements(ListView<E> listView, List<E> elementsToSelect) {
         listView.getSelectionModel().clearSelection();
         for (E element : elementsToSelect) {
@@ -403,99 +409,94 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
      *                                                                         *
      *=========================================================================*/
 
-    private static class DraggableCell<E> extends ListCell<E> {
+     private static class ListBuilderCell<E> extends ReordableListView.DraggableCell<E> {
+         private final ListBuilder<E> listBuilder;
 
-        public DraggableCell() {
-            ListCell<?> thisCell = this;
+         public ListBuilderCell(ListBuilder<E> listBuilder) {
+             this.listBuilder = listBuilder;
+         }
 
-            setOnDragDetected(event -> {
-                if (getItem() == null) {
-                    return;
-                }
+         @Override
+         protected void updateItem(E item, boolean empty) {
+             super.updateItem(item, empty);
 
-                Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
+             if (empty || item == null || isDropTargetCell || item == getPlaceholderItem()) {
+                 setText(null);
+                 setGraphic(null);
+             } else {
+                 setText(item.toString());
+                 setGraphic(null);
+             }
+         }
 
-                ClipboardContent content = new ClipboardContent();
-                content.putString(getItem().toString());
+         @Override
+         protected void onDragExitedFromOutsideSource(DragEvent dragEvent) {
+             if (hasAddedTempItem) {
+                 hasAddedTempItem = false;
+                 getListView().getItems().remove(getPlaceholderItem());
+             }
+         }
 
-                draggedItem = getItem();
-                sourceDragListView = getListView();
+         @Override
+         protected boolean onDragDroppedFromOutsideSource(DragEvent dragEvent) {
+                boolean success;
 
-                WritableImage snapshot = this.snapshot(new SnapshotParameters(), null);
+                if (!(dragEvent.getGestureSource() instanceof ListBuilderCell<?>)) {
+                    success = false;
+                } else {
+                    Dragboard dragboard = dragEvent.getDragboard();
 
-                dragboard.setDragView(snapshot);
-                dragboard.setContent(content);
+                    if (dragboard.hasContent(LIST_BUILDER_DATA_FORMAT)) {
+                        ListBuilderCell<?> sourceCell = (ListBuilderCell<?>) dragEvent.getGestureSource();
 
-                event.consume();
-            });
+                        ListView<?> listView = getListView();
+                        ListView<?> sourceListView = sourceCell.getListView();
+                        int indexOfPlaceHolder = listView.getItems().indexOf(getPlaceholderItem());
 
-            setOnDragOver(event -> {
-                if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
-                    event.acceptTransferModes(TransferMode.MOVE);
-                }
+                        E sourceItem = (E) dragboard.getContent(LIST_BUILDER_DATA_FORMAT);
 
-                event.consume();
-            });
+                        move(sourceListView, listView, List.of(sourceItem), indexOfPlaceHolder);
 
-            setOnDragEntered(event -> {
-                if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
-                    setOpacity(0.3);
-                }
-            });
+                        listView.getItems().remove(getPlaceholderItem());
 
-            setOnDragExited(event -> {
-                if (event.getGestureSource() != thisCell && event.getDragboard().hasString()) {
-                    setOpacity(1);
-                }
-                setPressed(false);
-            });
-
-            setOnDragDropped(event -> {
-                Dragboard dragBoard = event.getDragboard();
-                boolean success = false;
-
-                if (dragBoard.hasString()) {
-                    ObservableList<E> items = getListView().getItems();
-
-                    int draggedIdx = items.indexOf(draggedItem);
-                    int thisIdx = items.indexOf(getItem());
-
-                    if (sourceDragListView == getListView()) {
-                        if (!isEmpty()) {
-                            items.set(draggedIdx, getItem());
-                            items.set(thisIdx, (E)draggedItem);
-                        } else {
-                            items.remove(draggedItem);
-                            items.add((E)draggedItem);
-                        }
+                        hasAddedTempItem = false;
+                        success = true;
+                    } else {
+                        success = false;
                     }
-                    if (sourceDragListView != getListView()) {
-                        move(sourceDragListView, getListView(), List.of(draggedItem));
-                    }
-
-                    success = true;
                 }
-                event.setDropCompleted(success);
 
-                event.consume();
 
                 clearAndSelectElements(getListView(), (List<E>) List.of(draggedItem));
-            });
 
-            setOnDragDone(DragEvent::consume);
-        }
+                return success;
+         }
 
-        @Override
-        protected void updateItem(E item, boolean empty) {
-            super.updateItem(item, empty);
+         @Override
+         protected void onDragDetected(MouseEvent event) {
+             Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
 
-            if (empty || item == null) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                setText(item.toString());
-                setGraphic(getGraphic());
-            }
-        }
-    }
+             ClipboardContent content = new ClipboardContent();
+             content.put(LIST_BUILDER_DATA_FORMAT, getItem());
+
+             draggedItem = getItem();
+
+             Image dragImage = createDragView(getItem(), isEmpty());
+
+             dragboard.setDragView(dragImage);
+             dragboard.setContent(content);
+         }
+
+         @Override
+         protected void onDragDone(DragEvent dragEvent) {
+             dragEvent.consume();
+             setIsDropTargetCell(false);
+             updateItem(getItem(), false);
+         }
+
+         @Override
+         protected E getPlaceholderItem() {
+             return listBuilder.getPlaceHolderItem();
+         }
+     }
 }

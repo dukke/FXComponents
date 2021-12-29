@@ -69,7 +69,7 @@ public class ReordableListViewDragAndDropSample extends Application {
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
 
-            if (empty || item == null || isDropTargetCell || item.equals(tempPlaceholderItem)) {
+            if (empty || item == null || isDropTargetCell || item == tempPlaceholderItem) {
                 setText(null);
                 setGraphic(null);
             } else {

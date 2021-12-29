@@ -25,7 +25,7 @@ public class ListBuilderSample extends Application {
         ObservableList<String> sourceList = FXCollections.observableList(new ArrayList<>(List.of("Separator",
                 "Read Mail", "Size", "Encoding", "Edit")));
 
-        ListBuilder<String> listBuilder = new ListBuilder<>();
+        ListBuilder<String> listBuilder = new ListBuilder<>("TEST");
         listBuilder.setSourceItems(sourceList);
 
         listBuilder.setSourceHeader(new Label("Available Items:"));

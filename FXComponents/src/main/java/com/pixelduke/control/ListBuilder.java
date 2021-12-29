@@ -60,6 +60,8 @@ public class ListBuilder<T> extends Control {
 
     private ObjectProperty<Callback<ListView<T>, ListCell<T>>> cellFactory;
 
+    private final T placeHolderItem;
+
     /*=========================================================================*
      *                                                                         *
      *                        CONSTRUCTORS                                     *
@@ -69,8 +71,10 @@ public class ListBuilder<T> extends Control {
     /**
      * Constructs a new dual list view.
      */
-    public ListBuilder() {
+    public ListBuilder(T placeholderItem) {
         getStyleClass().add(DEFAULT_STYLECLASS);
+
+        this.placeHolderItem = placeholderItem;
 
         Label sourceHeader = new Label("");
         sourceHeader.getStyleClass().add("list-header-label");
@@ -90,6 +94,17 @@ public class ListBuilder<T> extends Control {
     @Override public String getUserAgentStylesheet() {
         return Objects.requireNonNull(ListBuilder.class.getResource("list-builder.css")).toExternalForm();
     }
+
+    /*=========================================================================*
+     *                                                                         *
+     *                        PUBLIC API                                       *
+     *                                                                         *
+     *=========================================================================*/
+
+    public T getPlaceHolderItem() {
+        return placeHolderItem;
+    }
+
 
     /*=========================================================================*
      *                                                                         *

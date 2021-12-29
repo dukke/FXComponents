@@ -26,14 +26,15 @@ public class ReordableListView<T> extends ListView<T> {
         private static final PseudoClass DROP_TARGET_CELL_PSEUDO_CLASS = PseudoClass.getPseudoClass("drop-target");
 
         private static Object draggedItem;
-        private static DraggableCell<?> previousDropTargetCell;
+        private static DraggableCell previousDropTargetCell;
+
+        private static DraggableCell<?> previousDropFromOutsideSourceTargetCell;
+        private static int previousDropFromOutsideSourceTargetIndex = -1;
 
         protected boolean isDropTargetCell = false;
 
         private static final String tempPlaceholderItem = "ADDED FROM OUTSIDE SOURCE";
-        private static boolean hasAddedTempItem = false;
-
-        private static int previousDropTargetIndex = -1;
+        protected static boolean hasAddedTempItem = false;
 
         public DraggableCell() {
             setOnDragDetected(event -> {
@@ -41,17 +42,9 @@ public class ReordableListView<T> extends ListView<T> {
                     return;
                 }
 
-                Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
-
-                ClipboardContent content = new ClipboardContent();
-                content.putString(getItem().toString());
-
                 draggedItem = getItem();
 
-                Image dragImage = createDragView(getItem(), isEmpty());
-
-                dragboard.setDragView(dragImage);
-                dragboard.setContent(content);
+                onDragDetected(event);
 
                 setIsDropTargetCell(true);
 
@@ -70,7 +63,6 @@ public class ReordableListView<T> extends ListView<T> {
             setOnDragExited(event -> setPressed(false));
 
             setOnDragDropped(event -> {
-                Dragboard dragBoard = event.getDragboard();
                 boolean success = false;
 
                 if (event.getGestureSource() instanceof DraggableCell) {
@@ -85,9 +77,6 @@ public class ReordableListView<T> extends ListView<T> {
                     success = onDragDroppedFromOutsideSource(event);
                 }
 
-//                if (dragBoard.hasString()) {
-//                    success = true;
-//                }
                 event.setDropCompleted(success);
 
                 event.consume();
@@ -111,7 +100,9 @@ public class ReordableListView<T> extends ListView<T> {
                     dragEnteredFromOutsideSource = true;
                 }
 
-                if (event.getDragboard().hasString() && !dragEnteredFromOutsideSource) {
+                if (!dragEnteredFromOutsideSource) {
+                    // Still dragging a cell while remaining in this same ListView
+
                     ListView<E> listView = getListView();
                     E currItem = getItem();
 
@@ -121,22 +112,30 @@ public class ReordableListView<T> extends ListView<T> {
                     setIsDropTargetCell(true);
                     previousDropTargetCell.setIsDropTargetCell(false);
 
-                    if (indexOfDraggedItem > indexOfCurrItem) {
+                    if (indexOfCurrItem == -1) {
+                        // dragging into an empty cell
+                        listView.getItems().remove(draggedItem);
+                        listView.getItems().add((E) draggedItem);
+
+                    } else if (indexOfDraggedItem > indexOfCurrItem) {
+                        // dragging up
                         listView.getItems().set(indexOfCurrItem, (E) draggedItem);
                         listView.getItems().remove(indexOfDraggedItem);
                         listView.getItems().add(indexOfCurrItem + 1, currItem);
-                    } else {
-                        listView.getItems().set(indexOfCurrItem, (E) draggedItem);
-                        listView.getItems().set(indexOfDraggedItem, currItem);
+                    } else if (indexOfDraggedItem < indexOfCurrItem) {
+                        // dragging down
+                        listView.getItems().remove(draggedItem);
+                        listView.getItems().add(indexOfCurrItem, (E) draggedItem); // indexOfCurrItem has decreased by 1 due to removing an item from the list so the index is where we want it now
                     }
 
                     updateItem(currItem, isEmpty());
+                    previousDropTargetCell.updateItem(previousDropTargetCell.getItem(), previousDropTargetCell.isEmpty());
 
                     previousDropTargetCell = this;
                 }
             });
 
-            setOnDragDone(DragEvent::consume);
+            setOnDragDone(this::onDragDone);
         }
 
         @Override
@@ -181,13 +180,13 @@ public class ReordableListView<T> extends ListView<T> {
             }
 
             setIsDropTargetCell(true);
-            if (previousDropTargetCell != null) {
-                previousDropTargetCell.setIsDropTargetCell(false);
+            if (previousDropFromOutsideSourceTargetCell != null) {
+                previousDropFromOutsideSourceTargetCell.setIsDropTargetCell(false);
 
-                if (indexOfCurrItem > previousDropTargetIndex) {
+                if (indexOfCurrItem > previousDropFromOutsideSourceTargetIndex) {
                     listView.getItems().set(indexOfCurrItem - 1, currItem);
                     listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
-                } else if (indexOfCurrItem < previousDropTargetIndex){
+                } else if (indexOfCurrItem < previousDropFromOutsideSourceTargetIndex){
                     listView.getItems().set(indexOfCurrItem + 1, currItem);
                     listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
                 }
@@ -195,12 +194,12 @@ public class ReordableListView<T> extends ListView<T> {
                 // First time entering this Node from outside
                 if (indexOfCurrItem < listView.getItems().size() - 1) {
                     listView.getItems().add(indexOfCurrItem + 1, currItem);
-                    listView.getItems().remove(tempPlaceholderItem);
+                    listView.getItems().remove(getPlaceholderItem());
                     listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
                 }
             }
-            previousDropTargetCell = this;
-            previousDropTargetIndex = indexOfCurrItem;
+            previousDropFromOutsideSourceTargetCell = this;
+            previousDropFromOutsideSourceTargetIndex = indexOfCurrItem;
 
             updateItem(currItem, isEmpty());
         }
@@ -212,6 +211,23 @@ public class ReordableListView<T> extends ListView<T> {
         protected boolean onDragDroppedFromOutsideSource(DragEvent dragEvent) {
             return false;
         }
-    }
 
+        protected void onDragDetected(MouseEvent event) {
+            Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
+
+            ClipboardContent content = new ClipboardContent();
+            content.putString(getItem().toString());
+
+
+
+            Image dragImage = createDragView(getItem(), isEmpty());
+
+            dragboard.setDragView(dragImage);
+            dragboard.setContent(content);
+        }
+
+        protected void onDragDone(DragEvent dragEvent) {
+            dragEvent.consume();
+        }
+    }
 }
