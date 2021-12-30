@@ -171,7 +171,11 @@ public class ReordableListView<T> extends ListView<T> {
             int indexOfCurrItem = listView.getItems().indexOf(currItem);
 
             if (!hasAddedTempItem) {
-                listView.getItems().add(indexOfCurrItem, getPlaceholderItem());
+                if (!isEmpty()) {
+                    listView.getItems().add(indexOfCurrItem, getPlaceholderItem());
+                } else {
+                    listView.getItems().add(getPlaceholderItem());
+                }
                 hasAddedTempItem = true;
             }
 

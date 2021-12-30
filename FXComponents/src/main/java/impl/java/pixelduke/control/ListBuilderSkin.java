@@ -23,7 +23,6 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
     public static final DataFormat LIST_BUILDER_DATA_FORMAT = new DataFormat("impl.java.pixelduke.control.ListBuilderSkin");
 
     private static Object draggedItem;
-    private static ListView<?> sourceDragListView;
 
     private final GridPane gridPane = new GridPane();
 
@@ -68,66 +67,72 @@ public class ListBuilderSkin<T> extends SkinBase<ListBuilder<T>> {
             }
         });
 
-//        targetListView.setOnDragOver(event -> {
-//            if (targetListView.getItems().size() != 0) {
-//                return;
-//            }
-//
-//            if (event.getDragboard().hasString()) {
-//                event.acceptTransferModes(TransferMode.MOVE);
-//            }
-//
-//            event.consume();
-//        });
-//
-//        targetListView.setOnDragDropped(event -> {
-//            if (targetListView.getItems().size() != 0) {
-//                return;
-//            }
-//
-//            Dragboard dragBoard = event.getDragboard();
-//            boolean success = false;
-//
-//            if (dragBoard.hasString()) {
-//                move(sourceDragListView, targetListView, List.of(draggedItem));
-//                success = true;
-//            }
-//            event.setDropCompleted(success);
-//
-////            event.consume();
-//
-//            clearAndSelectElements(targetListView, (List<T>) List.of(draggedItem));
-//            sourceDragListView.getSelectionModel().clearSelection();
-//        });
+        // Setup dragging and dropping from source list view into target list view when target list view is empty
+        targetListView.setOnDragOver(event -> {
+            if (targetListView.getItems().size() != 0) {
+                return;
+            }
 
-//        sourceListView.setOnDragOver(event -> {
-//            if (sourceListView.getItems().size() != 0) {
-//                return;
-//            }
-//
-//            if (event.getDragboard().hasString()) {
-//                event.acceptTransferModes(TransferMode.MOVE);
-//            }
-//
-//            event.consume();
-//        });
-//
-//        sourceListView.setOnDragDropped(event -> {
-//            if (sourceListView.getItems().size() != 0) {
-//                return;
-//            }
-//
-//            Dragboard dragBoard = event.getDragboard();
-//            boolean success = false;
-//
-//            if (dragBoard.hasString()) {
-//                move(targetListView, sourceDragListView, List.of(draggedItem));
-//                success = true;
-//            }
-//            event.setDropCompleted(success);
-//
-//            event.consume();
-//        });
+            Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasContent(LIST_BUILDER_DATA_FORMAT)) {
+                event.acceptTransferModes(TransferMode.MOVE);
+                event.consume();
+            }
+        });
+
+        targetListView.setOnDragDropped(event -> {
+            if (targetListView.getItems().size() != 0) {
+                return;
+            }
+
+            Dragboard dragBoard = event.getDragboard();
+            boolean success = false;
+
+            if (dragBoard.hasContent(LIST_BUILDER_DATA_FORMAT)) {
+                move(sourceListView, targetListView, List.of(draggedItem));
+                success = true;
+            }
+            event.setDropCompleted(success);
+
+            event.consume();
+
+            clearAndSelectElements(targetListView, (List<T>) List.of(draggedItem));
+            sourceListView.getSelectionModel().clearSelection();
+        });
+
+        // Setup dragging and dropping from target list view into source list view when source list view is empty
+        sourceListView.setOnDragOver(event -> {
+            if (sourceListView.getItems().size() != 0) {
+                return;
+            }
+
+            Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasContent(LIST_BUILDER_DATA_FORMAT)) {
+                event.acceptTransferModes(TransferMode.MOVE);
+                event.consume();
+            }
+        });
+
+        sourceListView.setOnDragDropped(event -> {
+            if (sourceListView.getItems().size() != 0) {
+                return;
+            }
+
+            Dragboard dragBoard = event.getDragboard();
+            boolean success = false;
+
+            if (dragBoard.hasContent(LIST_BUILDER_DATA_FORMAT)) {
+                move(targetListView, sourceListView, List.of(draggedItem));
+                success = true;
+            }
+            event.setDropCompleted(success);
+
+            event.consume();
+
+            clearAndSelectElements(sourceListView, (List<T>) List.of(draggedItem));
+            targetListView.getSelectionModel().clearSelection();
+        });
+
         sourceListView.getSelectionModel().selectedItemProperty().addListener(observable -> updateAddEnabledState());
         sourceListView.getItems().addListener((ListChangeListener<? super T>) changed -> updateAddAllEnabledState());
         targetListView.getSelectionModel().selectedItemProperty().addListener(observable -> {
