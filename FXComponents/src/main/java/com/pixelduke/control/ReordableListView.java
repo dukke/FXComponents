@@ -60,8 +60,6 @@ public class ReordableListView<T> extends ListView<T> {
                 event.consume();
             });
 
-            setOnDragExited(event -> setPressed(false));
-
             setOnDragDropped(event -> {
                 boolean success = false;
 
@@ -135,6 +133,13 @@ public class ReordableListView<T> extends ListView<T> {
                 }
             });
 
+            setOnDragExited(event -> {
+                setPressed(false);
+                setIsDropTargetCell(false);
+                previousDropFromOutsideSourceTargetCell = null;
+                previousDropFromOutsideSourceTargetIndex = -1;
+            });
+
             setOnDragDone(this::onDragDone);
         }
 
@@ -171,37 +176,44 @@ public class ReordableListView<T> extends ListView<T> {
             int indexOfCurrItem = listView.getItems().indexOf(currItem);
 
             if (!hasAddedTempItem) {
+                // First time entering a cell in this ListView while dragging from an outside source
                 if (!isEmpty()) {
                     listView.getItems().add(indexOfCurrItem, getPlaceholderItem());
                 } else {
                     listView.getItems().add(getPlaceholderItem());
                 }
                 hasAddedTempItem = true;
-            }
 
-            if (isEmpty()) {
+                previousDropFromOutsideSourceTargetCell = this;
+                previousDropFromOutsideSourceTargetIndex = indexOfCurrItem;
                 return;
             }
 
-            setIsDropTargetCell(true);
-            if (previousDropFromOutsideSourceTargetCell != null) {
-                previousDropFromOutsideSourceTargetCell.setIsDropTargetCell(false);
+//            if (isEmpty()) {
+//                return;
+//            }
 
-                if (indexOfCurrItem > previousDropFromOutsideSourceTargetIndex) {
-                    listView.getItems().set(indexOfCurrItem - 1, currItem);
-                    listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
-                } else if (indexOfCurrItem < previousDropFromOutsideSourceTargetIndex){
+//            setIsDropTargetCell(true);
+            if (previousDropFromOutsideSourceTargetCell != null) {
+//                previousDropFromOutsideSourceTargetCell.setIsDropTargetCell(false);
+
+                if (indexOfCurrItem < previousDropFromOutsideSourceTargetIndex || previousDropFromOutsideSourceTargetIndex == -1) {
                     listView.getItems().set(indexOfCurrItem + 1, currItem);
                     listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
-                }
-            } else {
-                // First time entering this Node from outside
-                if (indexOfCurrItem < listView.getItems().size() - 1) {
-                    listView.getItems().add(indexOfCurrItem + 1, currItem);
-                    listView.getItems().remove(getPlaceholderItem());
+                } else if (indexOfCurrItem > previousDropFromOutsideSourceTargetIndex) {
+                    listView.getItems().set(indexOfCurrItem - 1, currItem);
                     listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
                 }
             }
+//            else
+//            {
+//                // First time entering this Node from outside
+//                if (indexOfCurrItem < listView.getItems().size() - 1) {
+//                    listView.getItems().add(indexOfCurrItem + 1, currItem);
+//                    listView.getItems().remove(getPlaceholderItem());
+//                    listView.getItems().set(indexOfCurrItem, getPlaceholderItem());
+//                }
+//            }
             previousDropFromOutsideSourceTargetCell = this;
             previousDropFromOutsideSourceTargetIndex = indexOfCurrItem;
 
