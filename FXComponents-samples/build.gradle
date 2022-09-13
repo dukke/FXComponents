@@ -10,8 +10,11 @@ javafx {
 
 application {
 //    mainClassName = 'com.pixelduke.control.ReordableListViewDragAndDropSample'
-//    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
-    mainClassName = 'com.pixelduke.control.ListBuilderSample'
+    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
+//    mainClassName = 'com.pixelduke.control.ListBuilderSample'
+//    mainClassName = 'com.pixelduke.control.BlockingProgressBarSample'
+//    mainClassName = 'com.pixelduke.control.BlockingProgressBarWithProgressSample'
+
 }
 
 dependencies {
