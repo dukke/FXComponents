@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
@@ -31,10 +32,13 @@ public class ListBuilderSample extends Application {
         listBuilder.setSourceHeader(new Label("Available Items:"));
         listBuilder.setTargetHeader(new Label("To Print:"));
 
-        Scene scene = new Scene(listBuilder);
-        stage.setTitle("Button Sample");
+        VBox vBox = new VBox(listBuilder);
+        vBox.getStyleClass().add("container");
+        Scene scene = new Scene(vBox);
+        stage.setTitle("ListBuilder Sample");
 
-        new JMetro(scene, Style.LIGHT);
+        JMetro jMetro = new JMetro(scene, Style.LIGHT);
+        jMetro.getOverridingStylesheets().add(ListBuilderSample.class.getResource("list-builder-sample.css").toExternalForm());
 
         stage.setScene(scene);
         stage.show();

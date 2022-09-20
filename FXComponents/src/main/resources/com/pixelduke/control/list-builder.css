@@ -1,18 +1,12 @@
-
-.list-builder .source-header-container {
-    -fx-padding: 5px;
-}
-
-.list-builder .source-header-container .label {
-    -fx-font-size: 1.166667em;
-}
-
+.list-builder .source-header-container,
 .list-builder .target-header-container {
     -fx-padding: 5px;
 }
 
+.list-builder .source-header-container .label,
 .list-builder .target-header-container .label {
-    -fx-font-size: 1.166667em;
+    -fx-font-size: 1.166667em; /* 14 */
+    -fx-padding: 3px 0 3px 4px;
 }
 
 .list-builder .list-view {

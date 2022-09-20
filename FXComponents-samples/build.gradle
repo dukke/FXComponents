@@ -10,8 +10,8 @@ javafx {
 
 application {
 //    mainClassName = 'com.pixelduke.control.ReordableListViewDragAndDropSample'
-    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
-//    mainClassName = 'com.pixelduke.control.ListBuilderSample'
+//    mainClassName = 'com.pixelduke.control.ReordableListViewSample'
+    mainClassName = 'com.pixelduke.control.ListBuilderSample'
 //    mainClassName = 'com.pixelduke.control.BlockingProgressBarSample'
 //    mainClassName = 'com.pixelduke.control.BlockingProgressBarWithProgressSample'
 
@@ -20,7 +20,7 @@ application {
 dependencies {
     compile project(':fxcomponents')
 //    compile name: 'ScenicView'
-    implementation 'org.jfxtras:jmetro:11.6.15'
+    implementation 'org.jfxtras:jmetro:11.6.16'
 }
 
 repositories {
