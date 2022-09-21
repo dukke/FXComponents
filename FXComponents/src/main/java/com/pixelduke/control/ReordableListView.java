@@ -174,7 +174,7 @@ public class ReordableListView<T> extends ListView<T> {
             int indexOfCurrItem = listView.getItems().indexOf(currItem);
 
             if (!hasAddedTempItem) {
-                // First time entering a cell in this ListView while dragging from an outside source
+                // FIRST time entering cells in this ListView while dragging from an outside source
 
                 if (!isEmpty()) { // NOT Empty
                     listView.getItems().add(indexOfCurrItem, getPlaceholderItem());
@@ -184,12 +184,15 @@ public class ReordableListView<T> extends ListView<T> {
                 hasAddedTempItem = true;
 
                 previousDropFromOutsideSourceTargetCell = this;
-                previousDropFromOutsideSourceTargetIndex = indexOfCurrItem;
+                previousDropFromOutsideSourceTargetIndex = listView.getItems().indexOf(getItem());
+
                 return;
             }
 
-            // NOT the first time entering a cell in this ListView while dragging from an outside source
+
             if (previousDropFromOutsideSourceTargetCell != null && indexOfCurrItem != -1 && previousDropFromOutsideSourceTargetIndex != -1) {
+                // NOT FIRST time entering cells in this ListView while dragging from an outside source
+
                 if ((indexOfCurrItem < previousDropFromOutsideSourceTargetIndex)
                         && !isLastCellIndex(listView, indexOfCurrItem)) {
                     // Dragging up
