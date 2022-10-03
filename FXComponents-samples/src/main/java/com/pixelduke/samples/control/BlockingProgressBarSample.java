@@ -1,5 +1,7 @@
-package com.pixelduke.control;
+package com.pixelduke.samples.control;
 
+import com.pixelduke.control.BlockingProgressBar;
+import com.pixelduke.control.FlatAlert;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
@@ -11,7 +13,13 @@ import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 
-public class BlockingProgressBarWithProgressSample extends Application {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class BlockingProgressBarSample extends Application {
+
+
     private String errorMessage;
 
     public static void main(String[] args) {
@@ -41,15 +49,20 @@ public class BlockingProgressBarWithProgressSample extends Application {
             blockingProgressBar.showAndWait((new Task<Void>() {
 
                 @Override
-                protected Void call() throws Exception {
-                    int totalIterations = 10;
-
-                    updateProgress(0, totalIterations);
-                    for (int i = 0 ; i < totalIterations; ++i) {
-                        Thread.sleep(500);
-                        updateProgress(i, totalIterations);
-                        updateMessage("Finished processing " + (i + 1) + " out of " + totalIterations + " tags.");
+                protected Void call() {
+                    try {
+                        ProcessBuilder pb = new ProcessBuilder("notepad.exe");
+                        pb.redirectErrorStream(true);
+                        Process process = pb.start();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                        String line;
+                        while ((line = reader.readLine()) != null)
+                            System.out.println("tasklist: " + line);
+                        process.waitFor();
+                    } catch (InterruptedException | IOException e) {
+                        errorMessage = e.getMessage();
                     }
+
                     return null;
                 }
             }));

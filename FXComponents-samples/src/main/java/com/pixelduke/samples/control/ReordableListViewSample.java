@@ -1,5 +1,6 @@
-package com.pixelduke.control;
+package com.pixelduke.samples.control;
 
+import com.pixelduke.control.ReordableListView;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
