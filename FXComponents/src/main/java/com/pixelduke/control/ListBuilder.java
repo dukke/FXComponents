@@ -60,6 +60,10 @@ public class ListBuilder<T> extends Control {
 
     private ObjectProperty<Callback<ListView<T>, ListCell<T>>> cellFactory;
 
+    /**
+     * This is the item that will be automatically added to the list by the ListBuilder implementation when something
+     * is dragged over it.
+     */
     private final T placeHolderItem;
 
     /*=========================================================================*
