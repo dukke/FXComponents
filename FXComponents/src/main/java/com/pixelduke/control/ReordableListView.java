@@ -33,7 +33,6 @@ public class ReordableListView<T> extends ListView<T> {
 
         protected boolean isDropTargetCell = false;
 
-        private static final String tempPlaceholderItem = "ADDED FROM OUTSIDE SOURCE";
         protected static boolean hasAddedTempItem = false;
 
         public DraggableCell() {
@@ -81,11 +80,17 @@ public class ReordableListView<T> extends ListView<T> {
 
                 setIsDropTargetCell(false);
 
+                // When the cell is dropped let's select it
+                getListView().getSelectionModel().select(getIndex());
+
                 updateItem(getItem(), isEmpty());
             });
 
             addEventHandler(DragEvent.DRAG_ENTERED, event -> {
                 boolean dragEnteredFromOutsideSource = false;
+
+                // We are dragging a cell so let's clear the ListView of all selected elements
+                getListView().getSelectionModel().clearSelection();
 
                 if (event.getGestureSource() instanceof DraggableCell) {
                     DraggableCell<?> sourceDraggableCell = (DraggableCell<?>) event.getGestureSource();
