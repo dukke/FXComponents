@@ -5,7 +5,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
-version = '1.1.0'
+version = '1.1.2'
 
 def versionDescription = 'FXComponents'
 
