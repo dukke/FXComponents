@@ -7,6 +7,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.*;
 
 
+/**
+ * A ListView that the user can reorder by drag and dropping each cell.
+ *
+ * @param <T>
+ */
 public class ReordableListView<T> extends ListView<T> {
     private static final String DEFAULT_STYLE_CLASS = "reordable-list-view";
 

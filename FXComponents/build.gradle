@@ -36,18 +36,18 @@ repositories {
 
 jar {
     manifest {
-        attributes( 'Implementation-Title': project.name,
-                'Implementation-Version': project.version)
+        attributes( 'Implementation-Title':     project.name,
+                    'Implementation-Version':   project.version)
     }
+}
+
+javadoc {
+    options.addStringOption('javafx', '-quiet')
 }
 
 task javadocJar(type: Jar) {
     getArchiveClassifier().set('javadoc')
     from javadoc
-}
-
-javadoc {
-    options.addStringOption('javafx', '-quiet')
 }
 
 task sourceJar(type: Jar) {
@@ -67,6 +67,8 @@ publishing {
         mavenJava(MavenPublication) {
             customizePom(pom)
             from components.java
+            artifact sourceJar
+            artifact javadocJar
         }
     }
     repositories {
@@ -86,7 +88,6 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-
 def customizePom(pom) {
     pom.withXml {
         def root = asNode()
@@ -101,6 +102,7 @@ def customizePom(pom) {
             resolveStrategy = Closure.DELEGATE_FIRST
 
             description projectDescription
+
             name project.name
             url projectURL
             issueManagement {
@@ -125,7 +127,3 @@ def customizePom(pom) {
         }
     }
 }
-
-
-
-

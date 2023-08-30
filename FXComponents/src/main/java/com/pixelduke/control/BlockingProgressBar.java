@@ -13,6 +13,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * A blocking dialog (blocks user input) that shows a progress bar while a background operation is in progress.
+ */
 public class BlockingProgressBar {
 
     /**
