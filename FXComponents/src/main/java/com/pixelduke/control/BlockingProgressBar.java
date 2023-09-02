@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 
 /**
  * A blocking dialog (blocks user input) that shows a progress bar while a background operation is in progress.
+ * The ProgressBar can be of indeterminate progress or not.
+ * The developer passes a Runnable to the showAndWait method. That Runnable will be executed in a background task, progress
+ * can be updated through convenience methods in the Task class API.
  */
 public class BlockingProgressBar {
 

@@ -69,7 +69,7 @@ public class BlockingProgressBarSample extends Application {
 
         });
 
-        Scene scene = new Scene(stackPane, 800, 600);
+        Scene scene = new Scene(stackPane, 400, 300);
         stage.setTitle("Button Sample");
 
         new JMetro(scene, Style.LIGHT);

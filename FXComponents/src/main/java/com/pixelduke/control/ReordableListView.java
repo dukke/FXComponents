@@ -10,7 +10,7 @@ import javafx.scene.input.*;
 /**
  * A ListView that the user can reorder by drag and dropping each cell.
  *
- * @param <T>
+ * @param <T>  This type is used to represent the type of the objects stored in the ListViews items ObservableList.
  */
 public class ReordableListView<T> extends ListView<T> {
     private static final String DEFAULT_STYLE_CLASS = "reordable-list-view";

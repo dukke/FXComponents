@@ -18,7 +18,7 @@ ext {
     versionControlOriginURL = 'https://github.com/dukke/FXComponents.git'
     issueTrackerURL = 'https://github.com/dukke/FXComponents/issues'
 
-    projectURL = 'https://github.com/dukke/FXComponent'
+    projectURL = 'https://pixelduke.com/fxcomponents/'
 }
 
 /* ------- */

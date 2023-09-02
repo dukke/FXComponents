@@ -15,10 +15,11 @@ import java.util.Objects;
 
 /**
  * A control with 2 lists. A source list and a target list.
- * The target list will contain all the elemenns the user chose from the source list.
+ * The target list will contain all the elements the user chose from the source list.
  * The user can drag and drop items from the source list onto the target list or use the buttons available to accomplish that.
+ * Reordering of the lists is also possible through drag and drop.
  *
- * @param <T> The type of the items that will be present in the source and target list
+ * @param <T>  This type is used to represent the type of the objects stored in the source and target ListViews items ObservableList.
  */
 public class ListBuilder<T> extends Control {
     private static final String DEFAULT_STYLECLASS = "list-builder";
