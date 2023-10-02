@@ -1,4 +1,4 @@
-package impl.java.pixelduke.control;
+package impl.com.pixelduke.control;
 
 import com.pixelduke.control.ListBuilder;
 import com.pixelduke.control.ReordableListView;

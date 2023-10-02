@@ -2,6 +2,8 @@ package com.pixelduke.samples.control;
 
 import com.pixelduke.control.BlockingProgressBar;
 import com.pixelduke.control.FlatAlert;
+import com.pixelduke.transit.Style;
+import com.pixelduke.transit.TransitTheme;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
@@ -10,8 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class BlockingProgressBarSample extends Application {
         Scene scene = new Scene(stackPane, 400, 300);
         stage.setTitle("Button Sample");
 
-        new JMetro(scene, Style.LIGHT);
+        new TransitTheme(scene, Style.LIGHT);
 
         stage.setScene(scene);
         stage.show();

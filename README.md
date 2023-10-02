@@ -3,6 +3,10 @@ A collection of controls for JavaFX.
 
 ![FXComponents List Builder Control](List-Builder.gif)
 
+![Blocking-ProgressBar.gif](Blocking-ProgressBar.gif)
+
+![Reordable-ListView.gif](Reordable-ListView.gif)
+
 ## Documentation
 Documentation of FXComponents can be found in this link: [FXComponents documentation](https://pixelduke.com/fxcomponents/). 
 You should check it if you want to know more about this library.

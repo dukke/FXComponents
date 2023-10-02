@@ -1,6 +1,6 @@
 package com.pixelduke.control;
 
-import impl.java.pixelduke.control.ListBuilderSkin;
+import impl.com.pixelduke.control.ListBuilderSkin;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;

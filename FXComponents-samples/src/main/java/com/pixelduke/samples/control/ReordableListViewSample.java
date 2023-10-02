@@ -1,6 +1,8 @@
 package com.pixelduke.samples.control;
 
 import com.pixelduke.control.ReordableListView;
+import com.pixelduke.transit.Style;
+import com.pixelduke.transit.TransitTheme;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,8 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class ReordableListViewSample extends Application {
         Scene scene = new Scene(root);
         stage.setTitle("ReordableListView Sample");
 
-        new JMetro(scene, Style.LIGHT);
+        new TransitTheme(scene, Style.LIGHT);
 
         stage.setScene(scene);
         stage.show();

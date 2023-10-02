@@ -21,8 +21,8 @@ application {
 
 dependencies {
     implementation project(':fxcomponents')
-//    compile name: 'ScenicView'
-    implementation 'org.jfxtras:jmetro:11.6.16'
+
+    implementation 'com.pixelduke:transit:1.0.0'
 }
 
 repositories {

@@ -1,6 +1,8 @@
 package com.pixelduke.samples.control;
 
 import com.pixelduke.control.ListBuilder;
+import com.pixelduke.transit.Style;
+import com.pixelduke.transit.TransitTheme;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,8 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ListBuilderSample extends Application {
         Scene scene = new Scene(vBox);
         stage.setTitle("ListBuilder Sample");
 
-        JMetro jMetro = new JMetro(scene, Style.LIGHT);
+        TransitTheme jMetro = new TransitTheme(scene, Style.LIGHT);
         jMetro.getOverridingStylesheets().add(ListBuilderSample.class.getResource("list-builder-sample.css").toExternalForm());
 
         stage.setScene(scene);
