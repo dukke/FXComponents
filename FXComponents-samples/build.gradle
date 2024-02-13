@@ -9,13 +9,20 @@ javafx {
 }
 
 application {
+    applicationDefaultJvmArgs =  [
+            "--add-opens=javafx.graphics/javafx.stage=com.pixelduke.fxthemes"
+            ,"--add-exports=javafx.graphics/com.sun.javafx.tk.quantum=com.pixelduke.fxthemes"
+            ,"-Dprism.forceUploadingPainter=true"
+    ]
+
     mainModule = "com.pixelduke.samples.fxcomponents"
 
 //    mainClassName = 'com.pixelduke.samples.control.ReordableListViewDragAndDropSample'
 //    mainClassName = 'com.pixelduke.samples.control.ReordableListViewSample'
 //    mainClassName = 'com.pixelduke.samples.control.ListBuilderSample'
 //    mainClassName = 'com.pixelduke.samples.control.BlockingProgressBarSample'
-    mainClassName = 'com.pixelduke.samples.control.BlockingProgressBarWithProgressSample'
+//    mainClassName = 'com.pixelduke.samples.control.BlockingProgressBarWithProgressSample'
+    mainClassName = 'com.pixelduke.samples.control.NavigationPaneSample'
 
 }
 
@@ -23,6 +30,7 @@ dependencies {
     implementation project(':fxcomponents')
 
     implementation 'com.pixelduke:transit:1.0.0'
+    implementation 'com.pixelduke:fxthemes:1.0.0'
 }
 
 repositories {

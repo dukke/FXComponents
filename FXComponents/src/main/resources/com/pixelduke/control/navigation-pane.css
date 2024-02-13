@@ -1,0 +1,71 @@
+.navigation-pane > .main-container > .top-container {
+    -fx-pref-height: 20px;
+}
+
+.navigation-pane > .main-container > .content {
+    -fx-background-color: white;
+    -fx-background-radius: 8px 0 0 0;
+
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px 1px 0 1px;
+    -fx-border-radius: 8px 0 0 0;
+
+    -fx-padding: 10px 0 0 10px;
+}
+
+.navigation-pane > .main-container > .pane {
+    -fx-pref-width: 320px;
+}
+
+.navigation-pane > .main-container > .pane > .top-container > .hamburger-container {
+    -fx-padding: 0 0 0 6px;
+}
+
+.navigation-pane > .main-container > .pane > .top-container > .menu-items-container {
+    -fx-padding: 1em 3px 0 3px;
+    -fx-spacing: 0.5em;
+}
+
+.navigation-pane > .main-container > .pane > .settings-container {
+    -fx-padding: 0 3px 0.5em 3px;
+}
+
+.navigation-pane > .main-container > .pane .item-container {
+    -fx-padding: 7px 0 7px 0;
+}
+
+.navigation-pane > .main-container > .pane .item-container,
+.navigation-pane > .main-container > .pane > .top-container > .hamburger-container > .button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6px 6px 6px 6px !important;
+}
+
+.navigation-pane > .main-container > .pane .item-container:hover,
+.navigation-pane > .main-container > .pane .item-container:selected,
+.navigation-pane > .main-container > .pane .hamburger-container .button.light:hover {
+    -fx-background-color: rgba(200, 200, 200, 0.2) !important;
+}
+
+.navigation-pane > .main-container > .pane .item-container > .label {
+    -fx-font-family: "Segoe UI Variable Light Small";
+
+    -fx-font-size: 1.166667em;
+    -fx-padding: 0 0 0 8px;
+
+    -fx-graphic-text-gap: 0.75em;
+}
+
+.navigation-pane > .main-container > .pane .item-container > .selection-marker-container {
+    -fx-padding: 3px 0 3px 0;
+}
+
+.navigation-pane > .main-container > .pane .item-container > .selection-marker-container > .selection-marker {
+    -fx-pref-width: 3px;
+    -fx-pref-height: 0.5em;
+
+    -fx-background-color: transparent;
+}
+
+.navigation-pane > .main-container > .pane .item-container:selected > .selection-marker-container > .selection-marker {
+    -fx-background-color: cornflowerblue;
+}
