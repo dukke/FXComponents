@@ -1,6 +1,8 @@
 package impl.com.pixelduke.control;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -8,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
@@ -21,6 +24,7 @@ import java.util.HashMap;
 
 public class NavigationPaneLeftPane extends Region {
     private static final PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass EXPANDED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("expanded");
 
     private static final String HAMBURGER_ICON_URL = NavigationPaneSkin.class.getResource("hamburguer_icon.png").toExternalForm();
     private static final String SETTINGS_ICON_URL = NavigationPaneSkin.class.getResource("settings_icon.png").toExternalForm();
@@ -31,15 +35,26 @@ public class NavigationPaneLeftPane extends Region {
     private final VBox settingsContainer = new VBox();
     private final ObservableList<MenuItem> menuItems = FXCollections.observableArrayList();
 
-    private final HashMap<MenuItem, Node> menuItemVisualRepresentation = new HashMap<>();
+    private final HashMap<MenuItem, ItemView> menuItemVisualRepresentation = new HashMap<>();
 
     private final ObjectProperty<MenuItem> selectedMenuItem = new SimpleObjectProperty<>();
+
+    private final BooleanProperty expanded = new SimpleBooleanProperty() {
+        @Override
+        protected void invalidated() {
+            onExpandedChanged();
+        }
+    };
 
     private Node settingsItemNode;
 
     private Node previouslySelectedMenuItem;
 
     public NavigationPaneLeftPane() {
+        // expanded state
+        expanded.set(true);
+        pseudoClassStateChanged(EXPANDED_PSEUDOCLASS_STATE, expanded.get());
+
         // hamburger button
         ImageView hamburguerImageView = new ImageView(HAMBURGER_ICON_URL);
         Button hamburguerButton = new Button();
@@ -75,8 +90,17 @@ public class NavigationPaneLeftPane extends Region {
     }
 
     private void onHambugerButtonClicked(MouseEvent mouseEvent) {
-
+        expanded.set(!expanded.get());
     }
+
+    private void onExpandedChanged() {
+        for (ItemView itemView : menuItemVisualRepresentation.values()) {
+            itemView.setExpanded(expanded.get());
+        }
+        pseudoClassStateChanged(EXPANDED_PSEUDOCLASS_STATE, expanded.get());
+        requestLayout();
+    }
+
 
     public ObservableList<MenuItem> getMenuItems() { return menuItems; }
 
@@ -98,16 +122,16 @@ public class NavigationPaneLeftPane extends Region {
     }
 
     private Node createItemRepresentation(MenuItem menuItem) {
-        ItemView itemContainer = new ItemView();
-        itemContainer.label.textProperty().bind(menuItem.textProperty());
-        itemContainer.label.graphicProperty().bind(menuItem.graphicProperty());
+        ItemView itemView = new ItemView(expanded.get());
+        itemView.label.textProperty().bind(menuItem.textProperty());
+        itemView.label.graphicProperty().bind(menuItem.graphicProperty());
 
-        menuItemVisualRepresentation.put(menuItem, itemContainer);
+        menuItemVisualRepresentation.put(menuItem, itemView);
 
         // mouse events
-        itemContainer.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> onMouseClickedOnMenuItem(event, itemContainer, menuItem));
+        itemView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> onMouseClickedOnMenuItem(event, itemView, menuItem));
 
-        return itemContainer;
+        return itemView;
     }
 
     private void onMouseClickedOnMenuItem(MouseEvent mouseEvent, Node menuItemContainer, MenuItem menuItem) {
@@ -145,6 +169,12 @@ public class NavigationPaneLeftPane extends Region {
     public ObjectProperty<MenuItem> selectedMenuItemProperty() { return selectedMenuItem; }
     public void setSelectedMenuItem(MenuItem selectedMenuItem) { this.selectedMenuItem.set(selectedMenuItem); }
 
+    // -- expanded
+    public boolean isExpanded() { return expanded.get(); }
+    public BooleanProperty expandedProperty() { return expanded; }
+    public void setExpanded(boolean expanded) { this.expanded.set(expanded); }
+
+
     /*=========================================================================*
      *                                                                         *
      *                      SUPPORTING CLASSES                                 *
@@ -153,8 +183,20 @@ public class NavigationPaneLeftPane extends Region {
 
     private static class ItemView extends HBox {
         Label label = new Label();
+        private BooleanProperty expanded = new SimpleBooleanProperty() {
+            @Override
+            protected void invalidated() {
+                if (get()) {
+                    label.setContentDisplay(ContentDisplay.LEFT);
+                } else {
+                    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                }
+            }
+        };
 
-        ItemView() {
+        ItemView(boolean expanded) {
+            this.expanded.set(expanded);
+
             getStyleClass().add("item-container");
 
             // Selection
@@ -165,5 +207,10 @@ public class NavigationPaneLeftPane extends Region {
 
             getChildren().addAll(selectionMarkerContainer, label);
         }
+
+        // -- expanded
+        public boolean isExpanded() { return expanded.get(); }
+        public BooleanProperty expandedProperty() { return expanded; }
+        public void setExpanded(boolean expanded) { this.expanded.set(expanded); }
     }
 }
