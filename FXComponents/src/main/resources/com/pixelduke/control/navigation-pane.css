@@ -14,7 +14,7 @@
 }
 
 .navigation-pane > .main-container > .pane {
-    -fx-padding: 0 0.25em 0 0;
+    -fx-pref-width: 50px;
 }
 
 .navigation-pane > .main-container > .pane:expanded {

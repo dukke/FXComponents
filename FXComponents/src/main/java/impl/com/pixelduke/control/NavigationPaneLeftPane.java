@@ -26,7 +26,7 @@ public class NavigationPaneLeftPane extends Region {
     private static final PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
     private static final PseudoClass EXPANDED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("expanded");
 
-    private static final String HAMBURGER_ICON_URL = NavigationPaneSkin.class.getResource("hamburguer_icon.png").toExternalForm();
+    private static final String HAMBURGER_ICON_URL = NavigationPaneSkin.class.getResource("hamburger_icon.png").toExternalForm();
     private static final String SETTINGS_ICON_URL = NavigationPaneSkin.class.getResource("settings_icon.png").toExternalForm();
 
     private final VBox topContainer = new VBox();
@@ -58,7 +58,7 @@ public class NavigationPaneLeftPane extends Region {
         // hamburger button
         ImageView hamburguerImageView = new ImageView(HAMBURGER_ICON_URL);
         Button hamburguerButton = new Button();
-        hamburguerButton.setOnMouseClicked(this::onHambugerButtonClicked);
+        hamburguerButton.setOnMouseClicked(this::onHamburgerButtonClicked);
         hamburguerButton.getStyleClass().add("light");
         hamburguerButton.setGraphic(hamburguerImageView);
         hamburguerButton.setFocusTraversable(false);
@@ -89,7 +89,7 @@ public class NavigationPaneLeftPane extends Region {
         hamburguerButton.getStyleClass().add("hamburger");
     }
 
-    private void onHambugerButtonClicked(MouseEvent mouseEvent) {
+    private void onHamburgerButtonClicked(MouseEvent mouseEvent) {
         expanded.set(!expanded.get());
     }
 
@@ -183,7 +183,7 @@ public class NavigationPaneLeftPane extends Region {
 
     private static class ItemView extends HBox {
         Label label = new Label();
-        private BooleanProperty expanded = new SimpleBooleanProperty() {
+        private final BooleanProperty expanded = new SimpleBooleanProperty() {
             @Override
             protected void invalidated() {
                 if (get()) {
