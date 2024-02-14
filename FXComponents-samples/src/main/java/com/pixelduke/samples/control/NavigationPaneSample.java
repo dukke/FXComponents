@@ -57,35 +57,4 @@ public class NavigationPaneSample  extends Application {
         Win11ThemeWindowManager win11ThemeWindowManager = (Win11ThemeWindowManager) ThemeWindowManagerFactory.create();
         win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA);
     }
-
-    class ImageContainer extends Region {
-        private final ImageView imageView = new ImageView();
-
-        public ImageContainer() {
-            getChildren().add(imageView);
-        }
-
-        @Override
-        protected void layoutChildren() {
-            double leftPadding = snappedLeftInset();
-            double topPadding = snappedTopInset();
-            double rightPadding = snappedRightInset();
-            double bottomPadding = snappedBottomInset();
-
-            double width = getWidth();
-            double height = getHeight();
-
-            double imageViewAvailableWidth = width - leftPadding - rightPadding;
-            double imageViewAvailableHeight = height - topPadding - bottomPadding;
-
-            imageView.relocate(leftPadding, topPadding);
-            imageView.setFitWidth(imageViewAvailableWidth);
-            imageView.setFitHeight(imageViewAvailableHeight);
-        }
-
-        // -- image
-        public void setImage(Image image) { imageView.setImage(image); }
-        public Image getImage() { return imageView.getImage(); }
-        public ObjectProperty<Image> imageProperty() { return imageView.imageProperty(); }
-    }
 }
