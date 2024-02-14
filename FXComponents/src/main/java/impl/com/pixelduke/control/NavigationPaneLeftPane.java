@@ -34,6 +34,7 @@ public class NavigationPaneLeftPane extends Region {
     private final VBox menuItemsContainer = new VBox();
     private final VBox settingsContainer = new VBox();
     private final ObservableList<MenuItem> menuItems = FXCollections.observableArrayList();
+    private final ObservableList<MenuItem> footerMenuItems = FXCollections.observableArrayList();
 
     private final HashMap<MenuItem, ItemView> menuItemVisualRepresentation = new HashMap<>();
 
@@ -80,11 +81,13 @@ public class NavigationPaneLeftPane extends Region {
         topContainer.getChildren().add(menuItemsContainer);
 
         menuItems.addListener(this::onMenuItemsChanged);
+        footerMenuItems.addListener(this::onFooterMenuItemsChanged);
 
         // CSS
         getStyleClass().add("pane");
         topContainer.getStyleClass().add("top-container");
         menuItemsContainer.getStyleClass().add("menu-items-container");
+        footerContainer.getStyleClass().add("footer-items-container");
         settingsContainer.getStyleClass().add("settings-container");
         hamburguerButton.getStyleClass().add("hamburger");
     }
@@ -101,8 +104,11 @@ public class NavigationPaneLeftPane extends Region {
         requestLayout();
     }
 
-
+    // -- menu items
     public ObservableList<MenuItem> getMenuItems() { return menuItems; }
+
+    // -- footer menu items
+    public ObservableList<MenuItem> getFooterMenuItems() { return footerMenuItems; }
 
     private void onMenuItemsChanged(ListChangeListener.Change<? extends MenuItem> change) {
         while(change.next()) {
@@ -116,6 +122,23 @@ public class NavigationPaneLeftPane extends Region {
                 for (MenuItem removedMenuItem : change.getRemoved()) {
                     Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem);
                     menuItemsContainer.getChildren().remove((nodeToRemove));
+                }
+            }
+        }
+    }
+
+    private void onFooterMenuItemsChanged(ListChangeListener.Change<? extends MenuItem> change) {
+        while(change.next()) {
+            if (change.wasAdded()) {
+                for (MenuItem addedMenuItem : change.getAddedSubList()) {
+                    Node menuItemNode = createItemRepresentation(addedMenuItem);
+                    footerContainer.getChildren().add(menuItemNode);
+                }
+            }
+            if (change.wasRemoved()) {
+                for (MenuItem removedMenuItem : change.getRemoved()) {
+                    Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem);
+                    footerContainer.getChildren().remove((nodeToRemove));
                 }
             }
         }
@@ -158,10 +181,19 @@ public class NavigationPaneLeftPane extends Region {
         double availableWidth = width - leftPadding - rightPadding;
         double availableHeight = height - topPadding - bottomPadding;
 
-        topContainer.resize(availableWidth, availableHeight);
+        double settingsContainerHeight = settingsContainer.prefHeight(availableWidth);
+        double footerContainerHeight = footerContainer.prefHeight(availableWidth);
 
-        double settingsNodeHeight = settingsContainer.prefHeight(availableWidth);
-        settingsContainer.resizeRelocate(0, availableHeight - settingsNodeHeight, availableWidth, settingsNodeHeight);
+        // topContainer
+        topContainer.resize(availableWidth, availableHeight - settingsContainerHeight - footerContainerHeight);
+
+        // footer container
+        double footerContainerY = availableHeight - settingsContainerHeight - footerContainerHeight;
+        footerContainer.resizeRelocate(0, footerContainerY, availableWidth, footerContainerHeight);
+
+        // settings container
+        double settingsContainerY = availableHeight - settingsContainerHeight;
+        settingsContainer.resizeRelocate(0, settingsContainerY, availableWidth, settingsContainerHeight);
     }
 
     // -- selected menu item

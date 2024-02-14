@@ -26,9 +26,17 @@
     -fx-padding: 0 0 0 6px;
 }
 
+.navigation-pane > .main-container > .pane > .top-container > .menu-items-container,
+.navigation-pane > .main-container > .pane > .footer-items-container {
+    -fx-spacing: 0.5em;
+}
+
 .navigation-pane > .main-container > .pane > .top-container > .menu-items-container {
     -fx-padding: 1em 3px 0 3px;
-    -fx-spacing: 0.5em;
+}
+
+.navigation-pane > .main-container > .pane > .footer-items-container {
+    -fx-padding: 1em 3px 0.5em 3px;
 }
 
 .navigation-pane > .main-container > .pane > .settings-container {
@@ -74,3 +82,4 @@
 .navigation-pane > .main-container > .pane .item-container:selected > .selection-marker-container > .selection-marker {
     -fx-background-color: cornflowerblue;
 }
+

@@ -31,6 +31,7 @@ public class NavigationPaneSkin extends SkinBase<NavigationPane> {
 //        topContainer.getChildren().add(backButton);
 
         Bindings.bindContent(leftContainer.getMenuItems(), navigationPane.getMenuItems());
+        Bindings.bindContent(leftContainer.getFooterMenuItems(), navigationPane.getFooterMenuItems());
 
         if (navigationPane.getContent() != null) {
             contentContainer.getChildren().setAll(navigationPane.getContent());

@@ -28,6 +28,7 @@ public class NavigationPaneSample  extends Application {
 
         NavigationPane navigationPane = new NavigationPane();
 
+        // menu items
         ImageView menuItem1Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-home-20.png").toExternalForm());
         navigationPane.getMenuItems().add(new MenuItem("Home", menuItem1Graphic));
         ImageView menuItem2Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-design-20.png").toExternalForm());
@@ -35,9 +36,11 @@ public class NavigationPaneSample  extends Application {
         ImageView menuItem3Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-list-20.png").toExternalForm());
         navigationPane.getMenuItems().add(new MenuItem("All samples", menuItem3Graphic));
 
-//        ImageContainer imageContainer = new ImageContainer();
-//        imageContainer.setImage(new Image(NavigationPaneSample.class.getResource("sample_for_navigation_pane.png").toExternalForm()));
-//        navigationPane.setContent(imageContainer);
+        // footer menu items
+        ImageView footerMenuItem1 = new ImageView(NavigationPaneSample.class.getResource("icons8-account-20.png").toExternalForm());
+        navigationPane.getFooterMenuItems().add(new MenuItem("Account", footerMenuItem1));
+        ImageView footerMenuItem2 = new ImageView(NavigationPaneSample.class.getResource("icons8-help-20.png").toExternalForm());
+        navigationPane.getFooterMenuItems().add(new MenuItem("Help", footerMenuItem2));
 
         Scene scene = new Scene(navigationPane, 1000, 600);
         scene.setFill(Color.TRANSPARENT);
