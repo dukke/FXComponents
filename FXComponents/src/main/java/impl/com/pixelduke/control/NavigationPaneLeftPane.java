@@ -10,21 +10,18 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.HashMap;
 
 public class NavigationPaneLeftPane extends Region {
     private static final PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
-    private static final PseudoClass EXPANDED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("expanded");
+    private static final PseudoClass SHRUNKEN_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("shrunken");
 
     private static final String HAMBURGER_ICON_URL = NavigationPaneSkin.class.getResource("hamburger_icon.png").toExternalForm();
     private static final String SETTINGS_ICON_URL = NavigationPaneSkin.class.getResource("settings_icon.png").toExternalForm();
@@ -36,11 +33,11 @@ public class NavigationPaneLeftPane extends Region {
     private final ObservableList<MenuItem> menuItems = FXCollections.observableArrayList();
     private final ObservableList<MenuItem> footerMenuItems = FXCollections.observableArrayList();
 
-    private final HashMap<MenuItem, ItemView> menuItemVisualRepresentation = new HashMap<>();
+    private final HashMap<MenuItem, PaneItemView> menuItemVisualRepresentation = new HashMap<>();
 
     private final ObjectProperty<MenuItem> selectedMenuItem = new SimpleObjectProperty<>();
 
-    private final BooleanProperty expanded = new SimpleBooleanProperty() {
+    private final BooleanProperty shrunken = new SimpleBooleanProperty() {
         @Override
         protected void invalidated() {
             onExpandedChanged();
@@ -52,9 +49,9 @@ public class NavigationPaneLeftPane extends Region {
     private Node previouslySelectedMenuItem;
 
     public NavigationPaneLeftPane() {
-        // expanded state
-        expanded.set(true);
-        pseudoClassStateChanged(EXPANDED_PSEUDOCLASS_STATE, expanded.get());
+        // shrunken state
+        shrunken.set(false);
+        pseudoClassStateChanged(SHRUNKEN_PSEUDOCLASS_STATE, shrunken.get());
 
         // hamburger button
         ImageView hamburguerImageView = new ImageView(HAMBURGER_ICON_URL);
@@ -93,14 +90,14 @@ public class NavigationPaneLeftPane extends Region {
     }
 
     private void onHamburgerButtonClicked(MouseEvent mouseEvent) {
-        expanded.set(!expanded.get());
+        shrunken.set(!shrunken.get());
     }
 
     private void onExpandedChanged() {
-        for (ItemView itemView : menuItemVisualRepresentation.values()) {
-            itemView.setExpanded(expanded.get());
+        for (PaneItemView itemView : menuItemVisualRepresentation.values()) {
+            itemView.setShrunken(shrunken.get());
         }
-        pseudoClassStateChanged(EXPANDED_PSEUDOCLASS_STATE, expanded.get());
+        pseudoClassStateChanged(SHRUNKEN_PSEUDOCLASS_STATE, shrunken.get());
         requestLayout();
     }
 
@@ -120,7 +117,7 @@ public class NavigationPaneLeftPane extends Region {
             }
             if (change.wasRemoved()) {
                 for (MenuItem removedMenuItem : change.getRemoved()) {
-                    Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem);
+                    Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem).getNodeRepresentation();
                     menuItemsContainer.getChildren().remove((nodeToRemove));
                 }
             }
@@ -137,7 +134,7 @@ public class NavigationPaneLeftPane extends Region {
             }
             if (change.wasRemoved()) {
                 for (MenuItem removedMenuItem : change.getRemoved()) {
-                    Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem);
+                    Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem).getNodeRepresentation();
                     footerContainer.getChildren().remove((nodeToRemove));
                 }
             }
@@ -145,9 +142,9 @@ public class NavigationPaneLeftPane extends Region {
     }
 
     private Node createItemRepresentation(MenuItem menuItem) {
-        ItemView itemView = new ItemView(expanded.get());
-        itemView.label.textProperty().bind(menuItem.textProperty());
-        itemView.label.graphicProperty().bind(menuItem.graphicProperty());
+        PaneLeafItemView itemView = new PaneLeafItemView(shrunken.get());
+        itemView.titleProperty().bind(menuItem.textProperty());
+        itemView.graphicProperty().bind(menuItem.graphicProperty());
 
         menuItemVisualRepresentation.put(menuItem, itemView);
 
@@ -201,48 +198,8 @@ public class NavigationPaneLeftPane extends Region {
     public ObjectProperty<MenuItem> selectedMenuItemProperty() { return selectedMenuItem; }
     public void setSelectedMenuItem(MenuItem selectedMenuItem) { this.selectedMenuItem.set(selectedMenuItem); }
 
-    // -- expanded
-    public boolean isExpanded() { return expanded.get(); }
-    public BooleanProperty expandedProperty() { return expanded; }
-    public void setExpanded(boolean expanded) { this.expanded.set(expanded); }
-
-
-    /*=========================================================================*
-     *                                                                         *
-     *                      SUPPORTING CLASSES                                 *
-     *                                                                         *
-     *=========================================================================*/
-
-    private static class ItemView extends HBox {
-        Label label = new Label();
-        private final BooleanProperty expanded = new SimpleBooleanProperty() {
-            @Override
-            protected void invalidated() {
-                if (get()) {
-                    label.setContentDisplay(ContentDisplay.LEFT);
-                } else {
-                    label.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                }
-            }
-        };
-
-        ItemView(boolean expanded) {
-            this.expanded.set(expanded);
-
-            getStyleClass().add("item-container");
-
-            // Selection
-            StackPane selectionMarker = new StackPane();
-            StackPane selectionMarkerContainer = new StackPane(selectionMarker);
-            selectionMarkerContainer.getStyleClass().add("selection-marker-container");
-            selectionMarker.getStyleClass().add("selection-marker");
-
-            getChildren().addAll(selectionMarkerContainer, label);
-        }
-
-        // -- expanded
-        public boolean isExpanded() { return expanded.get(); }
-        public BooleanProperty expandedProperty() { return expanded; }
-        public void setExpanded(boolean expanded) { this.expanded.set(expanded); }
-    }
+    // -- shrunken
+    public boolean getShrunken() { return shrunken.get(); }
+    public BooleanProperty shrunkenProperty() { return shrunken; }
+    public void setShrunken(boolean shrunken) { this.shrunken.set(shrunken); }
 }

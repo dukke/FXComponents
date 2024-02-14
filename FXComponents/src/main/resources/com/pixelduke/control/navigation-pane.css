@@ -13,13 +13,12 @@
     -fx-padding: 10px 0 0 10px;
 }
 
-.navigation-pane > .main-container > .pane {
+.navigation-pane > .main-container > .pane:shrunken {
     -fx-pref-width: 50px;
 }
 
-.navigation-pane > .main-container > .pane:expanded {
+.navigation-pane > .main-container > .pane {
     -fx-pref-width: 320px;
-    -fx-padding: 0;
 }
 
 .navigation-pane > .main-container > .pane > .top-container > .hamburger-container {
