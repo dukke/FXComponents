@@ -45,7 +45,7 @@ public class NavigationPaneLeftPane extends Region {
         }
     };
 
-    private PaneItemView settingsItem;
+    private final PaneItemView settingsItem;
 
     private PaneItemView previouslySelectedMenuItem;
 
@@ -144,12 +144,11 @@ public class NavigationPaneLeftPane extends Region {
 
     private PaneItemView createItemRepresentation(MenuItem menuItem) {
         PaneItemView itemView;
-        if (menuItem instanceof Menu) {
+        if (menuItem instanceof Menu menu) {
             PaneContainerItemView paneContainerItemView = new PaneContainerItemView(shrunken.get());
 
-            Menu menu = (Menu) menuItem;
-            for (MenuItem mItem : menu.getItems()) {
-                PaneItemView paneItemView = createItemRepresentation(mItem);
+            for (MenuItem childMenuItem : menu.getItems()) {
+                PaneItemView paneItemView = createItemRepresentation(childMenuItem);
                 paneContainerItemView.getItems().add(paneItemView);
             }
 

@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class PaneLeafItemView extends HBox implements PaneItemView {
-    private Label label = new Label();
+    private final Label label = new Label();
 
     private final BooleanProperty shrunken = new SimpleBooleanProperty() {
         @Override
