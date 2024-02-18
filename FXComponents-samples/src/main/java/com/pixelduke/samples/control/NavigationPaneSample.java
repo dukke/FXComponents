@@ -6,12 +6,11 @@ import com.pixelduke.transit.TransitTheme;
 import com.pixelduke.window.ThemeWindowManagerFactory;
 import com.pixelduke.window.Win11ThemeWindowManager;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -35,6 +34,12 @@ public class NavigationPaneSample  extends Application {
         navigationPane.getMenuItems().add(new MenuItem("Design guidance", menuItem2Graphic));
         ImageView menuItem3Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-list-20.png").toExternalForm());
         navigationPane.getMenuItems().add(new MenuItem("All samples", menuItem3Graphic));
+        // -- menu
+        ImageView menuItem4Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-document-20.png").toExternalForm());
+        Menu menu = new Menu("Document actions", menuItem4Graphic);
+        ImageView menuItem5Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-insert-page-20.png").toExternalForm());
+        menu.getItems().add(new MenuItem("Add page", menuItem5Graphic));
+        navigationPane.getMenuItems().add(menu);
 
         // footer menu items
         ImageView footerMenuItem1 = new ImageView(NavigationPaneSample.class.getResource("icons8-account-20.png").toExternalForm());

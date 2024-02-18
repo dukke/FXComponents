@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -44,9 +45,9 @@ public class NavigationPaneLeftPane extends Region {
         }
     };
 
-    private Node settingsItemNode;
+    private PaneItemView settingsItem;
 
-    private Node previouslySelectedMenuItem;
+    private PaneItemView previouslySelectedMenuItem;
 
     public NavigationPaneLeftPane() {
         // shrunken state
@@ -68,8 +69,8 @@ public class NavigationPaneLeftPane extends Region {
         // settings item
         ImageView settingsImageView = new ImageView(SETTINGS_ICON_URL);
         MenuItem settingsMenuItem = new MenuItem("Settings", settingsImageView);
-        settingsItemNode = createItemRepresentation(settingsMenuItem);
-        settingsContainer.getChildren().add(settingsItemNode);
+        settingsItem = createItemRepresentation(settingsMenuItem);
+        settingsContainer.getChildren().add(settingsItem.getNodeRepresentation());
 
 
         getChildren().addAll(topContainer, footerContainer, settingsContainer);
@@ -111,7 +112,7 @@ public class NavigationPaneLeftPane extends Region {
         while(change.next()) {
             if (change.wasAdded()) {
                 for (MenuItem addedMenuItem : change.getAddedSubList()) {
-                    Node menuItemNode = createItemRepresentation(addedMenuItem);
+                    Node menuItemNode = createItemRepresentation(addedMenuItem).getNodeRepresentation();
                     menuItemsContainer.getChildren().add(menuItemNode);
                 }
             }
@@ -128,7 +129,7 @@ public class NavigationPaneLeftPane extends Region {
         while(change.next()) {
             if (change.wasAdded()) {
                 for (MenuItem addedMenuItem : change.getAddedSubList()) {
-                    Node menuItemNode = createItemRepresentation(addedMenuItem);
+                    Node menuItemNode = createItemRepresentation(addedMenuItem).getNodeRepresentation();
                     footerContainer.getChildren().add(menuItemNode);
                 }
             }
@@ -141,26 +142,41 @@ public class NavigationPaneLeftPane extends Region {
         }
     }
 
-    private Node createItemRepresentation(MenuItem menuItem) {
-        PaneLeafItemView itemView = new PaneLeafItemView(shrunken.get());
+    private PaneItemView createItemRepresentation(MenuItem menuItem) {
+        PaneItemView itemView;
+        if (menuItem instanceof Menu) {
+            PaneContainerItemView paneContainerItemView = new PaneContainerItemView(shrunken.get());
+
+            Menu menu = (Menu) menuItem;
+            for (MenuItem mItem : menu.getItems()) {
+                PaneItemView paneItemView = createItemRepresentation(mItem);
+                paneContainerItemView.getItems().add(paneItemView);
+            }
+
+            itemView = paneContainerItemView;
+
+        } else {
+            itemView = new PaneLeafItemView(shrunken.get());
+        }
+
         itemView.titleProperty().bind(menuItem.textProperty());
         itemView.graphicProperty().bind(menuItem.graphicProperty());
 
         menuItemVisualRepresentation.put(menuItem, itemView);
 
         // mouse events
-        itemView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> onMouseClickedOnMenuItem(event, itemView, menuItem));
+        itemView.getNodeRepresentation().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> onMouseClickedOnMenuItem(event, itemView, menuItem));
 
         return itemView;
     }
 
-    private void onMouseClickedOnMenuItem(MouseEvent mouseEvent, Node menuItemContainer, MenuItem menuItem) {
-        menuItemContainer.pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, true);
+    private void onMouseClickedOnMenuItem(MouseEvent mouseEvent, PaneItemView itemView, MenuItem menuItem) {
+        itemView.getNodeRepresentation().pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, true);
 
         if (previouslySelectedMenuItem != null) {
-            previouslySelectedMenuItem.pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, false);
+            previouslySelectedMenuItem.getNodeRepresentation().pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, false);
         }
-        previouslySelectedMenuItem = menuItemContainer;
+        previouslySelectedMenuItem = itemView;
 
         selectedMenuItem.set(menuItem);
     }
