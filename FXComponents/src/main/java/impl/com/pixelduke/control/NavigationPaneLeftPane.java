@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 import java.util.HashMap;
 
 public class NavigationPaneLeftPane extends Region {
-    private static final PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
     private static final PseudoClass SHRUNKEN_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("shrunken");
 
     private static final String HAMBURGER_ICON_URL = NavigationPaneSkin.class.getResource("hamburger_icon.png").toExternalForm();
@@ -41,7 +40,7 @@ public class NavigationPaneLeftPane extends Region {
     private final BooleanProperty shrunken = new SimpleBooleanProperty() {
         @Override
         protected void invalidated() {
-            onExpandedChanged();
+            onShrunkenChanged();
         }
     };
 
@@ -94,7 +93,7 @@ public class NavigationPaneLeftPane extends Region {
         shrunken.set(!shrunken.get());
     }
 
-    private void onExpandedChanged() {
+    private void onShrunkenChanged() {
         for (PaneItemView itemView : menuItemVisualRepresentation.values()) {
             itemView.setShrunken(shrunken.get());
         }
@@ -163,19 +162,18 @@ public class NavigationPaneLeftPane extends Region {
 
         menuItemVisualRepresentation.put(menuItem, itemView);
 
-        // mouse events
-        itemView.getNodeRepresentation().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> onMouseClickedOnMenuItem(event, itemView, menuItem));
+        // selection request events
+        itemView.setOnSelectionRequested(() -> onSelectionRequestedOnItem(itemView, menuItem));
 
         return itemView;
     }
 
-    private void onMouseClickedOnMenuItem(MouseEvent mouseEvent, PaneItemView itemView, MenuItem menuItem) {
-        itemView.getNodeRepresentation().pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, true);
-
+    private void onSelectionRequestedOnItem(PaneItemView itemView, MenuItem menuItem) {
         if (previouslySelectedMenuItem != null) {
-            previouslySelectedMenuItem.getNodeRepresentation().pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, false);
+            previouslySelectedMenuItem.setSelected(false);
         }
         previouslySelectedMenuItem = itemView;
+        itemView.setSelected(true);
 
         selectedMenuItem.set(menuItem);
     }

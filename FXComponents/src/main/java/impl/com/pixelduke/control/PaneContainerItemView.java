@@ -3,6 +3,7 @@ package impl.com.pixelduke.control;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -10,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -18,10 +20,20 @@ import javafx.scene.layout.VBox;
 
 public class PaneContainerItemView extends Region implements PaneItemView {
     private final VBox mainContainer = new VBox();
+    private final VBox childItemsContainer = new VBox();
     private final HBox titleContainer = new HBox();
     private final Label titleLabel = new Label();
     private final StackPane arrow = new StackPane();
     private final StackPane arrowContainer = new StackPane();
+
+    private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
+
+    private final BooleanProperty selected = new SimpleBooleanProperty(false) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, get());
+        }
+    };
 
     private final BooleanProperty shrunken = new SimpleBooleanProperty() {
         @Override
@@ -35,10 +47,24 @@ public class PaneContainerItemView extends Region implements PaneItemView {
                 arrow.setManaged(true);
                 arrow.setVisible(true);
             }
+
+            if (get()) {
+                setExpanded(false);
+                if (isChildSelected()) {
+                    fireOnSelectionRequest();
+                }
+            }
         }
     };
 
     private final ObservableList<PaneItemView> items = FXCollections.observableArrayList();
+
+    private final BooleanProperty expanded = new SimpleBooleanProperty(false) {
+        @Override
+        protected void invalidated() {
+            updateChildItemsVisibility();
+        }
+    };
 
     public PaneContainerItemView(boolean shrunken) {
         this.shrunken.set(shrunken);
@@ -57,30 +83,64 @@ public class PaneContainerItemView extends Region implements PaneItemView {
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
 
-        mainContainer.getChildren().add(titleContainer);
+        mainContainer.getChildren().addAll(titleContainer, childItemsContainer);
 
         getChildren().add(mainContainer);
 
         items.addListener(this::onItemsChanged);
 
+        titleContainer.addEventHandler(MouseEvent.MOUSE_CLICKED, this::onMouseClickedOnTitle);
+
+        updateChildItemsVisibility();
+
         // CSS
         getStyleClass().addAll("navigation-pane-item", "container-item-view");
         mainContainer.getStyleClass().add("main-container");
+        childItemsContainer.getStyleClass().add("child-items-container");
         titleContainer.getStyleClass().add("item-container");
         arrowContainer.getStyleClass().add("arrow-container");
         arrow.getStyleClass().add("arrow");
+    }
+
+    private boolean isChildSelected() {
+        for (PaneItemView paneItemView : items) {
+            if (paneItemView.isSelected()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void onMouseClickedOnTitle(MouseEvent mouseEvent) {
+        if (!isShrunken()) {
+            setExpanded(!expanded.get());
+        }
+
+        fireOnSelectionRequest();
+    }
+
+    private void fireOnSelectionRequest() {
+        if (getOnSelectionRequested() != null) {
+            getOnSelectionRequested().run();
+        }
+    }
+
+    private void updateChildItemsVisibility() {
+        childItemsContainer.setManaged(expanded.get());
+        childItemsContainer.setVisible(expanded.get());
     }
 
     private void onItemsChanged(ListChangeListener.Change<? extends PaneItemView> change) {
         while(change.next()) {
             if (change.wasAdded()) {
                 for (PaneItemView addedItem : change.getAddedSubList()) {
-                    mainContainer.getChildren().add(addedItem.getNodeRepresentation());
+                    childItemsContainer.getChildren().add(addedItem.getNodeRepresentation());
                 }
             }
             if (change.wasRemoved()) {
                 for (PaneItemView removedItem : change.getRemoved()) {
-                    mainContainer.getChildren().remove(removedItem.getNodeRepresentation());
+                    childItemsContainer.getChildren().remove(removedItem.getNodeRepresentation());
                 }
             }
         }
@@ -121,6 +181,21 @@ public class PaneContainerItemView extends Region implements PaneItemView {
     @Override
     public void setGraphic(Node graphic) { titleLabel.setGraphic(graphic); }
 
+    // selected
+    @Override
+    public void setSelected(boolean value) { selected.set(value); }
+    @Override
+    public boolean isSelected() { return selected.get(); }
+    @Override
+    public BooleanProperty selectedProperty() { return selected; }
+
+    // -- on selection requested
+    @Override
+    public Runnable getOnSelectionRequested() { return onSelectionRequested.get(); }
+    @Override
+    public ObjectProperty<Runnable> onSelectionRequestedProperty() { return onSelectionRequested; }
+    public void setOnSelectionRequested(Runnable onSelectionRequested) { this.onSelectionRequested.set(onSelectionRequested); }
+
     // -- shrunken
     @Override
     public boolean isShrunken() { return shrunken.get(); }
@@ -132,4 +207,9 @@ public class PaneContainerItemView extends Region implements PaneItemView {
     // -- node representation
     @Override
     public Node getNodeRepresentation() { return this; }
+
+    // -- expanded
+    public boolean isExpanded() { return expanded.get(); }
+    public BooleanProperty expandedProperty() { return expanded; }
+    public void setExpanded(boolean expanded) { this.expanded.set(expanded);}
 }

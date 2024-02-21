@@ -26,8 +26,9 @@
 }
 
 .navigation-pane > .main-container > .pane > .top-container > .menu-items-container,
-.navigation-pane > .main-container > .pane > .footer-items-container {
-    -fx-spacing: 0.5em;
+.navigation-pane > .main-container > .pane > .footer-items-container,
+.navigation-pane > .main-container > .pane .navigation-pane-item.container-item-view > .main-container {
+    -fx-spacing: 0.416667em;
 }
 
 .navigation-pane > .main-container > .pane > .top-container > .menu-items-container {
@@ -54,7 +55,7 @@
 
 .navigation-pane > .main-container > .pane .item-container:hover,
 .navigation-pane > .main-container > .pane .navigation-pane-item.item-container:selected,
-.navigation-pane > .main-container > .pane .navigation-pane-item:selected .item-container,
+.navigation-pane > .main-container > .pane .navigation-pane-item.container-item-view:selected > .main-container > .item-container,
 .navigation-pane > .main-container > .pane .hamburger-container .button.light:hover {
     -fx-background-color: rgba(200, 200, 200, 0.2) !important;
 }
@@ -81,6 +82,10 @@
 
 .navigation-pane > .main-container > .pane .navigation-pane-item:selected .selection-marker-container > .selection-marker {
     -fx-background-color: cornflowerblue;
+}
+
+.container-item-view > .main-container > .child-items-container > .item-container {
+    -fx-padding: 7px 10px 7px 2.333333em;
 }
 
 .container-item-view > .main-container > .item-container > .arrow-container > .arrow {
