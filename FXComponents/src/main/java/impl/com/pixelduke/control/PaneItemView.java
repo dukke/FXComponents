@@ -7,7 +7,7 @@ import javafx.css.PseudoClass;
 import javafx.scene.Node;
 
 interface PaneItemView {
-    static final PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
+    PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
 
     // -- title
     String getTitle();

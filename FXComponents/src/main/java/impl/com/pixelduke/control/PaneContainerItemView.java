@@ -163,7 +163,7 @@ public class PaneContainerItemView extends Region implements PaneItemView {
     }
 
     // -- items
-    public ObservableList<PaneItemView> getItems() { return items; }
+    ObservableList<PaneItemView> getItems() { return items; }
 
     // -- title
     @Override
