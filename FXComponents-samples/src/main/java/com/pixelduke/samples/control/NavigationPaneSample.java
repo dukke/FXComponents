@@ -37,8 +37,10 @@ public class NavigationPaneSample  extends Application {
         // -- menu
         ImageView menuItem4Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-document-20.png").toExternalForm());
         Menu menu = new Menu("Document actions", menuItem4Graphic);
-        ImageView menuItem5Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-insert-page-20.png").toExternalForm());
-        menu.getItems().add(new MenuItem("Add page", menuItem5Graphic));
+        ImageView menuItem5Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-rescan-document-20.png").toExternalForm());
+        menu.getItems().add(new MenuItem("Rescan document", menuItem5Graphic));
+        ImageView menuItem6Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-insert-page-20.png").toExternalForm());
+        menu.getItems().add(new MenuItem("Add page", menuItem6Graphic));
         navigationPane.getMenuItems().add(menu);
 
         // footer menu items
@@ -47,7 +49,9 @@ public class NavigationPaneSample  extends Application {
         ImageView footerMenuItem2 = new ImageView(NavigationPaneSample.class.getResource("icons8-help-20.png").toExternalForm());
         navigationPane.getFooterMenuItems().add(new MenuItem("Help", footerMenuItem2));
 
-        Scene scene = new Scene(navigationPane, 1000, 600);
+        navigationPane.setContent(new SampleUI());
+
+        Scene scene = new Scene(navigationPane, 1250, 630);
         scene.setFill(Color.TRANSPARENT);
 
         stage.setTitle("NavigationPane Sample");
@@ -60,6 +64,6 @@ public class NavigationPaneSample  extends Application {
         stage.show();
 
         Win11ThemeWindowManager win11ThemeWindowManager = (Win11ThemeWindowManager) ThemeWindowManagerFactory.create();
-        win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA);
+        win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA_ALT);
     }
 }

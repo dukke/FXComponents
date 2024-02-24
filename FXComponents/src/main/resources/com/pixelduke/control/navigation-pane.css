@@ -10,7 +10,7 @@
     -fx-border-width: 1px 1px 0 1px;
     -fx-border-radius: 8px 0 0 0;
 
-    -fx-padding: 10px 0 0 10px;
+    -fx-padding: 25px 0 0 25px;
 }
 
 .navigation-pane > .main-container > .pane:shrunken {
