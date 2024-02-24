@@ -10,14 +10,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class SampleUI extends Region {
-    private BorderPane mainContainer = new BorderPane();
 
     public SampleUI() {
+        BorderPane mainContainer = new BorderPane();
 
         Label titleHeader = new Label("Activities");
         mainContainer.setTop(titleHeader);
 
-        /*******************************  Top Part  ***********************************/
+        /*==============================  Top Part  ===================================*/
         BorderPane topContainer = new BorderPane();
         VBox contentContainer = new VBox();
 
@@ -45,7 +45,7 @@ public class SampleUI extends Region {
 
         contentContainer.getChildren().add(topContainer);
 
-        /*****************************  Bottom Part  ***********************************/
+        /*============================  Bottom Part  =====================================*/
 
         Label bottomHeading = new Label("Points of interest");
         contentContainer.getChildren().add(bottomHeading);
@@ -102,7 +102,7 @@ public class SampleUI extends Region {
         return pictureContainer;
     }
 
-    private class ImageContainer extends Region {
+    private static class ImageContainer extends Region {
         private final ImageView imageView = new ImageView();
 
         public ImageContainer() {
