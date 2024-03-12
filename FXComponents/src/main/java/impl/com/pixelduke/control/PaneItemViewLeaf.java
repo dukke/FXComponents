@@ -12,7 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
-public class PaneLeafItemView extends HBox implements PaneItemView {
+public class PaneItemViewLeaf extends HBox implements PaneItemView {
     private final Label label = new Label();
 
     private final BooleanProperty selected = new SimpleBooleanProperty(false) {
@@ -35,7 +35,7 @@ public class PaneLeafItemView extends HBox implements PaneItemView {
 
     private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
 
-    public PaneLeafItemView(boolean shrunken) {
+    public PaneItemViewLeaf(boolean shrunken) {
         this.shrunken.set(shrunken);
 
         getStyleClass().addAll("navigation-pane-item", "item-container");

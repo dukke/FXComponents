@@ -144,17 +144,17 @@ public class NavigationPaneLeftPane extends Region {
     private PaneItemView createItemRepresentation(MenuItem menuItem) {
         PaneItemView itemView;
         if (menuItem instanceof Menu menu) {
-            PaneContainerItemView paneContainerItemView = new PaneContainerItemView(shrunken.get());
+            PaneItemViewContainer paneItemViewContainer = new PaneItemViewContainer(shrunken.get());
 
             for (MenuItem childMenuItem : menu.getItems()) {
                 PaneItemView paneItemView = createItemRepresentation(childMenuItem);
-                paneContainerItemView.getItems().add(paneItemView);
+                paneItemViewContainer.getItems().add(paneItemView);
             }
 
-            itemView = paneContainerItemView;
+            itemView = paneItemViewContainer;
 
         } else {
-            itemView = new PaneLeafItemView(shrunken.get());
+            itemView = new PaneItemViewLeaf(shrunken.get());
         }
 
         itemView.titleProperty().bind(menuItem.textProperty());

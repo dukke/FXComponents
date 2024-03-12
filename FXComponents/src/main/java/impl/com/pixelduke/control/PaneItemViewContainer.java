@@ -18,7 +18,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class PaneContainerItemView extends Region implements PaneItemView {
+public class PaneItemViewContainer extends Region implements PaneItemView {
     private final VBox mainContainer = new VBox();
     private final VBox childItemsContainer = new VBox();
     private final HBox titleContainer = new HBox();
@@ -66,7 +66,7 @@ public class PaneContainerItemView extends Region implements PaneItemView {
         }
     };
 
-    public PaneContainerItemView(boolean shrunken) {
+    public PaneItemViewContainer(boolean shrunken) {
         this.shrunken.set(shrunken);
 
         // Selection
