@@ -8,9 +8,12 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -25,6 +28,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private final Label titleLabel = new Label();
     private final StackPane arrow = new StackPane();
     private final StackPane arrowContainer = new StackPane();
+
+    private final ContextMenu contextMenu = new ContextMenu();
 
     private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
 
@@ -66,7 +71,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
         }
     };
 
-    public PaneItemViewContainer(boolean shrunken) {
+    public PaneItemViewContainer(Menu menu, boolean shrunken) {
         this.shrunken.set(shrunken);
 
         // Selection
@@ -93,6 +98,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
         updateChildItemsVisibility();
 
+        contextMenu.getItems().addAll(menu.getItems());
+
         // CSS
         getStyleClass().addAll("navigation-pane-item", "container-item-view");
         mainContainer.getStyleClass().add("main-container");
@@ -115,6 +122,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private void onMouseClickedOnTitle(MouseEvent mouseEvent) {
         if (!isShrunken()) {
             setExpanded(!expanded.get());
+        } else {
+            contextMenu.show(this, Side.RIGHT, 0, 0);
         }
 
         fireOnSelectionRequest();

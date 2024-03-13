@@ -144,7 +144,7 @@ public class NavigationPaneLeftPane extends Region {
     private PaneItemView createItemRepresentation(MenuItem menuItem) {
         PaneItemView itemView;
         if (menuItem instanceof Menu menu) {
-            PaneItemViewContainer paneItemViewContainer = new PaneItemViewContainer(shrunken.get());
+            PaneItemViewContainer paneItemViewContainer = new PaneItemViewContainer(menu, shrunken.get());
 
             for (MenuItem childMenuItem : menu.getItems()) {
                 PaneItemView paneItemView = createItemRepresentation(childMenuItem);
