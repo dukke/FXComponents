@@ -13,12 +13,9 @@
     -fx-padding: 25px 0 0 25px;
 }
 
-.navigation-pane > .main-container > .pane:shrunken {
-    -fx-pref-width: 50px;
-}
-
-.navigation-pane > .main-container > .pane {
-    -fx-pref-width: 320px;
+.navigation-pane {
+    -shrunken-width: 50px;
+    -unshrunken-width: 320px;
 }
 
 .navigation-pane > .main-container > .pane > .top-container > .hamburger-container {

@@ -13,10 +13,12 @@ public class NavigationPaneSkin extends SkinBase<NavigationPane> {
     private final BorderPane mainContainer = new BorderPane();
     private final HBox topContainer = new HBox();
     private final StackPane contentContainer = new StackPane();
-    private final NavigationPaneLeftPane leftContainer = new NavigationPaneLeftPane();
+    private final NavigationPaneLeftPane leftContainer;
 
     public NavigationPaneSkin(NavigationPane navigationPane) {
         super(navigationPane);
+
+        leftContainer = new NavigationPaneLeftPane(navigationPane);
 
         mainContainer.setLeft(leftContainer);
         mainContainer.setTop(topContainer);

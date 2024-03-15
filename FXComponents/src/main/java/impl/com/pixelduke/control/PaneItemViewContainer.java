@@ -14,6 +14,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -73,6 +74,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
     public PaneItemViewContainer(Menu menu, boolean shrunken) {
         this.shrunken.set(shrunken);
+
+        titleLabel.setTextOverrun(OverrunStyle.CLIP);
 
         // Selection
         StackPane selectionMarker = new StackPane();

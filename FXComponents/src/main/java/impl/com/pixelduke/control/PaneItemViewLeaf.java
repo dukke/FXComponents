@@ -8,6 +8,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -39,6 +40,8 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
         this.shrunken.set(shrunken);
 
         getStyleClass().addAll("navigation-pane-item", "item-container");
+
+        label.setTextOverrun(OverrunStyle.CLIP);
 
         // Selection
         StackPane selectionMarker = new StackPane();

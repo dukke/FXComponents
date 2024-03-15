@@ -1,5 +1,11 @@
 package impl.com.pixelduke.control;
 
+import com.pixelduke.control.NavigationPane;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -17,6 +23,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.util.HashMap;
 
@@ -48,9 +55,15 @@ public class NavigationPaneLeftPane extends Region {
 
     private PaneItemView previouslySelectedMenuItem;
 
-    public NavigationPaneLeftPane() {
+    private final NavigationPane navigationPane;
+
+    public NavigationPaneLeftPane(NavigationPane navigationPane) {
+        this.navigationPane = navigationPane;
+
         // shrunken state
         shrunken.set(false);
+        prefWidthProperty().bind(navigationPane.unshrunkenWidthProperty());
+
         pseudoClassStateChanged(SHRUNKEN_PSEUDOCLASS_STATE, shrunken.get());
 
         // hamburger button
@@ -94,11 +107,30 @@ public class NavigationPaneLeftPane extends Region {
     }
 
     private void onShrunkenChanged() {
-        for (PaneItemView itemView : menuItemVisualRepresentation.values()) {
-            itemView.setShrunken(shrunken.get());
+        Timeline fadeTimeline = new Timeline();
+        fadeTimeline.getKeyFrames().setAll(new KeyFrame(Duration.millis(50), actionEvent -> {
+            for (PaneItemView itemView : menuItemVisualRepresentation.values()) {
+                itemView.setShrunken(shrunken.get());
+            }
+            pseudoClassStateChanged(SHRUNKEN_PSEUDOCLASS_STATE, shrunken.get());
+        }));
+
+        prefWidthProperty().unbind();
+        Timeline shrinkTimeline = new Timeline();
+        if (shrunken.get()) {
+            shrinkTimeline.getKeyFrames().setAll(new KeyFrame(Duration.millis(100),
+                                                              new KeyValue(prefWidthProperty(),
+                                                              navigationPane.getShrunkenWidth(),
+                                                              Interpolator.EASE_OUT)));
+        } else {
+            shrinkTimeline.getKeyFrames().setAll(new KeyFrame(Duration.millis(100),
+                                                 new KeyValue(prefWidthProperty(),
+                                                 navigationPane.getUnshrunkenWidth(),
+                                                 Interpolator.EASE_IN)));
         }
-        pseudoClassStateChanged(SHRUNKEN_PSEUDOCLASS_STATE, shrunken.get());
-        requestLayout();
+
+        ParallelTransition parallelTransition = new ParallelTransition(shrinkTimeline, fadeTimeline);
+        parallelTransition.playFromStart();
     }
 
     // -- menu items
