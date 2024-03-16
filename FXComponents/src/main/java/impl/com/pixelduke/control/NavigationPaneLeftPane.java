@@ -18,6 +18,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -35,6 +36,7 @@ public class NavigationPaneLeftPane extends Region {
 
     private final VBox topContainer = new VBox();
     private final VBox footerContainer = new VBox();
+    private final ScrollPane menuItemsScrollPane = new ScrollPane();
     private final VBox menuItemsContainer = new VBox();
     private final VBox settingsContainer = new VBox();
     private final ObservableList<MenuItem> menuItems = FXCollections.observableArrayList();
@@ -87,8 +89,12 @@ public class NavigationPaneLeftPane extends Region {
 
         getChildren().addAll(topContainer, footerContainer, settingsContainer);
 
+        menuItemsScrollPane.setContent(menuItemsContainer);
+        menuItemsScrollPane.setFitToWidth(true);
+        menuItemsScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
         topContainer.getChildren().add(hamburgerContainer);
-        topContainer.getChildren().add(menuItemsContainer);
+        topContainer.getChildren().add(menuItemsScrollPane);
 
         menuItems.addListener(this::onMenuItemsChanged);
         footerMenuItems.addListener(this::onFooterMenuItemsChanged);

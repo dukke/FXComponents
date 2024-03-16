@@ -22,13 +22,13 @@
     -fx-padding: 0 0 0 6px;
 }
 
-.navigation-pane > .main-container > .pane > .top-container > .menu-items-container,
+.navigation-pane > .main-container > .pane > .top-container .menu-items-container,
 .navigation-pane > .main-container > .pane > .footer-items-container,
 .navigation-pane > .main-container > .pane .navigation-pane-item.container-item-view > .main-container {
     -fx-spacing: 0.416667em;
 }
 
-.navigation-pane > .main-container > .pane > .top-container > .menu-items-container {
+.navigation-pane > .main-container > .pane > .top-container .menu-items-container {
     -fx-padding: 1em 3px 0 3px;
 }
 

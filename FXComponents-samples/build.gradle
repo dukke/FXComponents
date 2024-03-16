@@ -12,7 +12,10 @@ application {
     applicationDefaultJvmArgs =  [
             "--add-opens=javafx.graphics/javafx.stage=com.pixelduke.fxthemes"
             ,"--add-exports=javafx.graphics/com.sun.javafx.tk.quantum=com.pixelduke.fxthemes"
-            ,"-Dprism.forceUploadingPainter=true"
+            ,"-Dprism.forceUploadingPainter=true",
+
+            /* FXSkins */
+            "--add-opens=javafx.controls/javafx.scene.control.skin=com.pixelduke.fxskins"
     ]
 
     mainModule = "com.pixelduke.samples.fxcomponents"
