@@ -1,8 +1,16 @@
 package impl.com.pixelduke.control;
 
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -21,9 +29,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class PaneItemViewContainer extends Region implements PaneItemView {
-    private final VBox mainContainer = new VBox();
+    private static final Duration EXPAND_TRANSITION_DURATION = new Duration(100.0);
+    private static final Duration ROTATE_TRANSITION_DURATION = new Duration(100.0);
+
     private final VBox childItemsContainer = new VBox();
     private final HBox titleContainer = new HBox();
     private final Label titleLabel = new Label();
@@ -33,6 +44,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private final ContextMenu contextMenu = new ContextMenu();
 
     private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
+
+    private DoubleProperty transition;
 
     private final BooleanProperty selected = new SimpleBooleanProperty(false) {
         @Override
@@ -72,6 +85,10 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
         }
     };
 
+    private double transitionStartValue;
+    private Timeline timeline;
+    private RotateTransition rotateTransition;
+
     public PaneItemViewContainer(Menu menu, boolean shrunken) {
         this.shrunken.set(shrunken);
 
@@ -91,9 +108,10 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
 
-        mainContainer.getChildren().addAll(titleContainer, childItemsContainer);
+        getChildren().addAll(titleContainer, childItemsContainer);
 
-        getChildren().add(mainContainer);
+        rotateTransition = new RotateTransition(ROTATE_TRANSITION_DURATION, arrowContainer);
+        rotateTransition.setCycleCount(1);
 
         items.addListener(this::onItemsChanged);
 
@@ -105,11 +123,58 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
         // CSS
         getStyleClass().addAll("navigation-pane-item", "container-item-view");
-        mainContainer.getStyleClass().add("main-container");
         childItemsContainer.getStyleClass().add("child-items-container");
         titleContainer.getStyleClass().add("item-container");
         arrowContainer.getStyleClass().add("arrow-container");
         arrow.getStyleClass().add("arrow");
+    }
+
+    private void doAnimation() {
+        Duration duration;
+        if (timeline != null && (timeline.getStatus() != Animation.Status.STOPPED)) {
+            duration = timeline.getCurrentTime();
+            timeline.stop();
+        } else {
+            duration = EXPAND_TRANSITION_DURATION;
+        }
+
+        timeline = new Timeline();
+        timeline.setCycleCount(1);
+
+        KeyFrame k1, k2;
+
+        transitionStartValue = getTransition();
+
+        if (isExpanded()) {
+            k1 = new KeyFrame(
+                    Duration.ZERO,
+                    new KeyValue(transitionProperty(), transitionStartValue)
+            );
+
+            k2 = new KeyFrame(
+                    duration,
+                    new KeyValue(transitionProperty(), 1, Interpolator.LINEAR)
+
+            );
+
+            rotateTransition.setToAngle(180);
+        } else {
+            k1 = new KeyFrame(
+                    Duration.ZERO,
+                    new KeyValue(transitionProperty(), transitionStartValue)
+            );
+
+            k2 = new KeyFrame(
+                    duration,
+                    new KeyValue(transitionProperty(), 0, Interpolator.LINEAR)
+            );
+            rotateTransition.setToAngle(0);
+        }
+
+        timeline.getKeyFrames().setAll(k1, k2);
+        timeline.play();
+
+        rotateTransition.play();
     }
 
     private boolean isChildSelected() {
@@ -125,6 +190,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private void onMouseClickedOnTitle(MouseEvent mouseEvent) {
         if (!isShrunken()) {
             setExpanded(!expanded.get());
+            doAnimation();
         } else {
             contextMenu.show(this, Side.RIGHT, 0, 0);
         }
@@ -159,19 +225,50 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     }
 
     @Override
+    protected double computePrefHeight(double width) {
+        double titlePrefHeight = titleContainer.prefHeight(width);
+        double childItemsPrefHeight = childItemsContainer.prefHeight(width) * getTransition();
+
+        return  titlePrefHeight + childItemsPrefHeight;
+    }
+
+    @Override
     protected void layoutChildren() {
         double leftPadding = snappedLeftInset();
         double topPadding = snappedTopInset();
         double rightPadding = snappedRightInset();
-        double bottomPadding = snappedBottomInset();
 
         double width = getWidth();
-        double height = getHeight();
 
         double availableWidth = width - leftPadding - rightPadding;
-        double availableHeight = height - topPadding - bottomPadding;
 
-        mainContainer.resizeRelocate(leftPadding, topPadding, availableWidth, availableHeight);
+        double titlePrefWidth = availableWidth;
+        double titlePrefHeight = titleContainer.prefHeight(titlePrefWidth);
+
+        titleContainer.resizeRelocate(leftPadding, topPadding, titlePrefWidth, titlePrefHeight);
+
+        double childItemsPrefWidth = availableWidth;
+        double childItemsHeight = childItemsContainer.prefHeight(childItemsPrefWidth) * getTransition();
+
+        childItemsContainer.resizeRelocate(leftPadding, titlePrefHeight, childItemsPrefWidth, childItemsHeight);
+    }
+
+    /* *************************************************************************
+     *                                                                         *
+     * Properties                                                              *
+     *                                                                         *
+     **************************************************************************/
+
+    // -- transition
+    private final void setTransition(double value) { transitionProperty().set(value); }
+    private final double getTransition() { return transition == null ? 0.0 : transition.get(); }
+    private final DoubleProperty transitionProperty() {
+        if (transition == null) {
+            transition = new SimpleDoubleProperty(this, "transition", 0.0) {
+                @Override protected void invalidated() { requestLayout();}
+            };
+        }
+        return transition;
     }
 
     // -- items

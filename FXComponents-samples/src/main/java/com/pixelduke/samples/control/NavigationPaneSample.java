@@ -42,6 +42,9 @@ public class NavigationPaneSample  extends Application {
         ImageView menuItem6Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-insert-page-20.png").toExternalForm());
         menu.getItems().add(new MenuItem("Add page", menuItem6Graphic));
         navigationPane.getMenuItems().add(menu);
+        // menu items
+        ImageView menuItem7Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-upload-20.png").toExternalForm());
+        navigationPane.getMenuItems().add(new MenuItem("Upload", menuItem7Graphic));
 
         // footer menu items
         ImageView footerMenuItem1 = new ImageView(NavigationPaneSample.class.getResource("icons8-account-20.png").toExternalForm());
