@@ -71,6 +71,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
             if (get()) {
                 setExpanded(false);
+                arrowContainer.setRotate(0);
+
                 if (isChildSelected()) {
                     fireOnMenuAction();
                 }
@@ -227,10 +229,14 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
     @Override
     protected double computePrefHeight(double width) {
-        double titlePrefHeight = titleContainer.prefHeight(width);
-        double childItemsPrefHeight = childItemsContainer.prefHeight(width) * getTransition();
+        double prefHeight = 0;
 
-        return  titlePrefHeight + childItemsPrefHeight;
+        prefHeight += titleContainer.prefHeight(width);
+        if (isExpanded()) {
+            prefHeight += childItemsContainer.prefHeight(width) * getTransition();
+        }
+
+        return  prefHeight;
     }
 
     @Override
