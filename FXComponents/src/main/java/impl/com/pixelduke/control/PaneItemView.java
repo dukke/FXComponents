@@ -24,11 +24,6 @@ interface PaneItemView {
     boolean isSelected();
     BooleanProperty selectedProperty();
 
-    // -- on selection requested
-    Runnable getOnSelectionRequested();
-    ObjectProperty<Runnable> onSelectionRequestedProperty();
-    void setOnSelectionRequested(Runnable onSelectionRequested);
-
     // -- shrunken
     boolean isShrunken();
     void setShrunken(boolean value);

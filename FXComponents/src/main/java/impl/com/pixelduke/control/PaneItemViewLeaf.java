@@ -8,12 +8,14 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class PaneItemViewLeaf extends HBox implements PaneItemView {
+    private final MenuItem menuItem;
     private final Label label = new Label();
 
     private final BooleanProperty selected = new SimpleBooleanProperty(false) {
@@ -36,7 +38,8 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
 
     private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
 
-    public PaneItemViewLeaf(boolean shrunken) {
+    public PaneItemViewLeaf(MenuItem menuItem, boolean shrunken) {
+        this.menuItem = menuItem;
         this.shrunken.set(shrunken);
 
         getStyleClass().addAll("navigation-pane-item", "item-container");
@@ -55,15 +58,8 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
     }
 
     private void onMouseClicked(MouseEvent mouseEvent) {
-        if (getOnSelectionRequested() != null) {
-            getOnSelectionRequested().run();
-        }
+        menuItem.fire();
     }
-
-    // -- on selection requested
-    public Runnable getOnSelectionRequested() { return onSelectionRequested.get(); }
-    public ObjectProperty<Runnable> onSelectionRequestedProperty() { return onSelectionRequested; }
-    public void setOnSelectionRequested(Runnable onSelectionRequested) { this.onSelectionRequested.set(onSelectionRequested); }
 
     // -- shrunken
     public boolean isShrunken() { return shrunken.get(); }

@@ -35,6 +35,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private static final Duration EXPAND_TRANSITION_DURATION = new Duration(100.0);
     private static final Duration ROTATE_TRANSITION_DURATION = new Duration(100.0);
 
+    private final Menu menu;
+
     private final VBox childItemsContainer = new VBox();
     private final HBox titleContainer = new HBox();
     private final Label titleLabel = new Label();
@@ -70,7 +72,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
             if (get()) {
                 setExpanded(false);
                 if (isChildSelected()) {
-                    fireOnSelectionRequest();
+                    fireOnMenuAction();
                 }
             }
         }
@@ -90,6 +92,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private RotateTransition rotateTransition;
 
     public PaneItemViewContainer(Menu menu, boolean shrunken) {
+        this.menu = menu;
         this.shrunken.set(shrunken);
 
         titleLabel.setTextOverrun(OverrunStyle.CLIP);
@@ -195,13 +198,11 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
             contextMenu.show(this, Side.RIGHT, 0, 0);
         }
 
-        fireOnSelectionRequest();
+        fireOnMenuAction();
     }
 
-    private void fireOnSelectionRequest() {
-        if (getOnSelectionRequested() != null) {
-            getOnSelectionRequested().run();
-        }
+    private void fireOnMenuAction() {
+        menu.fire();
     }
 
     private void updateChildItemsVisibility() {
@@ -297,13 +298,6 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     public boolean isSelected() { return selected.get(); }
     @Override
     public BooleanProperty selectedProperty() { return selected; }
-
-    // -- on selection requested
-    @Override
-    public Runnable getOnSelectionRequested() { return onSelectionRequested.get(); }
-    @Override
-    public ObjectProperty<Runnable> onSelectionRequestedProperty() { return onSelectionRequested; }
-    public void setOnSelectionRequested(Runnable onSelectionRequested) { this.onSelectionRequested.set(onSelectionRequested); }
 
     // -- shrunken
     @Override

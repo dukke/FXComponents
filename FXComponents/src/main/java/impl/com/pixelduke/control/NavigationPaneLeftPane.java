@@ -14,6 +14,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
@@ -27,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class NavigationPaneLeftPane extends Region {
     private static final PseudoClass SHRUNKEN_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("shrunken");
@@ -59,6 +62,8 @@ public class NavigationPaneLeftPane extends Region {
 
     private final NavigationPane navigationPane;
 
+    private final Map<MenuItem, EventHandler<ActionEvent>> menuItemsToActionListeners = new HashMap();
+
     public NavigationPaneLeftPane(NavigationPane navigationPane) {
         this.navigationPane = navigationPane;
 
@@ -84,6 +89,7 @@ public class NavigationPaneLeftPane extends Region {
         ImageView settingsImageView = new ImageView(SETTINGS_ICON_URL);
         MenuItem settingsMenuItem = new MenuItem("Settings", settingsImageView);
         settingsItem = createItemRepresentation(settingsMenuItem);
+        addMenuItemListener(settingsMenuItem);
         settingsContainer.getChildren().add(settingsItem.getNodeRepresentation());
 
 
@@ -96,8 +102,8 @@ public class NavigationPaneLeftPane extends Region {
         topContainer.getChildren().add(hamburgerContainer);
         topContainer.getChildren().add(menuItemsScrollPane);
 
-        menuItems.addListener(this::onMenuItemsChanged);
-        footerMenuItems.addListener(this::onFooterMenuItemsChanged);
+        menuItems.addListener((ListChangeListener<? super MenuItem>) change -> onItemsChanged(change, false));
+        footerMenuItems.addListener((ListChangeListener<? super MenuItem>) change -> onItemsChanged(change, true));
 
         // CSS
         getStyleClass().add("pane");
@@ -145,38 +151,46 @@ public class NavigationPaneLeftPane extends Region {
     // -- footer menu items
     public ObservableList<MenuItem> getFooterMenuItems() { return footerMenuItems; }
 
-    private void onMenuItemsChanged(ListChangeListener.Change<? extends MenuItem> change) {
+    private void onItemsChanged(ListChangeListener.Change<? extends MenuItem> change, boolean isFooterItem) {
+        VBox itemsContainer = isFooterItem ? footerContainer : menuItemsContainer;
+
         while(change.next()) {
             if (change.wasAdded()) {
                 for (MenuItem addedMenuItem : change.getAddedSubList()) {
-                    Node menuItemNode = createItemRepresentation(addedMenuItem).getNodeRepresentation();
-                    menuItemsContainer.getChildren().add(menuItemNode);
+                    PaneItemView paneItemView = createItemRepresentation(addedMenuItem);
+                    itemsContainer.getChildren().add(paneItemView.getNodeRepresentation());
+
+                    addMenuItemListener(addedMenuItem);
                 }
             }
             if (change.wasRemoved()) {
                 for (MenuItem removedMenuItem : change.getRemoved()) {
                     Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem).getNodeRepresentation();
-                    menuItemsContainer.getChildren().remove((nodeToRemove));
+                    itemsContainer.getChildren().remove((nodeToRemove));
+
+                    menuItemsToActionListeners.remove(removedMenuItem);
                 }
             }
         }
     }
 
-    private void onFooterMenuItemsChanged(ListChangeListener.Change<? extends MenuItem> change) {
-        while(change.next()) {
-            if (change.wasAdded()) {
-                for (MenuItem addedMenuItem : change.getAddedSubList()) {
-                    Node menuItemNode = createItemRepresentation(addedMenuItem).getNodeRepresentation();
-                    footerContainer.getChildren().add(menuItemNode);
-                }
-            }
-            if (change.wasRemoved()) {
-                for (MenuItem removedMenuItem : change.getRemoved()) {
-                    Node nodeToRemove = menuItemVisualRepresentation.get(removedMenuItem).getNodeRepresentation();
-                    footerContainer.getChildren().remove((nodeToRemove));
-                }
-            }
+    private void addMenuItemListener(MenuItem menuItem) {
+        EventHandler<ActionEvent> actionEvent = event -> onMenuItemAction(event);
+        menuItem.addEventHandler(ActionEvent.ACTION, actionEvent);
+        menuItemsToActionListeners.put(menuItem, actionEvent);
+    }
+
+    private void onMenuItemAction(ActionEvent event) {
+        MenuItem target = (MenuItem) event.getTarget();
+        PaneItemView targetPaneItemView = menuItemVisualRepresentation.get(target);
+
+        if (previouslySelectedMenuItem != null) {
+            previouslySelectedMenuItem.setSelected(false);
         }
+        previouslySelectedMenuItem = targetPaneItemView;
+        targetPaneItemView.setSelected(true);
+
+        selectedMenuItem.set(target);
     }
 
     private PaneItemView createItemRepresentation(MenuItem menuItem) {
@@ -192,7 +206,7 @@ public class NavigationPaneLeftPane extends Region {
             itemView = paneItemViewContainer;
 
         } else {
-            itemView = new PaneItemViewLeaf(shrunken.get());
+            itemView = new PaneItemViewLeaf(menuItem, shrunken.get());
         }
 
         itemView.titleProperty().bind(menuItem.textProperty());
@@ -200,20 +214,7 @@ public class NavigationPaneLeftPane extends Region {
 
         menuItemVisualRepresentation.put(menuItem, itemView);
 
-        // selection request events
-        itemView.setOnSelectionRequested(() -> onSelectionRequestedOnItem(itemView, menuItem));
-
         return itemView;
-    }
-
-    private void onSelectionRequestedOnItem(PaneItemView itemView, MenuItem menuItem) {
-        if (previouslySelectedMenuItem != null) {
-            previouslySelectedMenuItem.setSelected(false);
-        }
-        previouslySelectedMenuItem = itemView;
-        itemView.setSelected(true);
-
-        selectedMenuItem.set(menuItem);
     }
 
     @Override

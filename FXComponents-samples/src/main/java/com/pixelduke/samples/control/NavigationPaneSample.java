@@ -63,6 +63,10 @@ public class NavigationPaneSample  extends Application {
 
         new TransitTheme(scene, Style.LIGHT);
 
+        navigationPane.selectedMenuItemProperty().addListener(observable -> {
+            System.out.println("Selected menu item changed to -> " + navigationPane.getSelectedMenuItem().getText());
+        });
+
         stage.setScene(scene);
         stage.show();
 

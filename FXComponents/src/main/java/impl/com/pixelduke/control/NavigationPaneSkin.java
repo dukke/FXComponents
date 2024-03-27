@@ -40,6 +40,8 @@ public class NavigationPaneSkin extends SkinBase<NavigationPane> {
         }
         navigationPane.contentProperty().addListener(observable -> contentContainer.getChildren().setAll(navigationPane.getContent()));
 
+        navigationPane.selectedMenuItemProperty().bind(leftContainer.selectedMenuItemProperty());
+
         // CSS
         navigationPane.getStyleClass().setAll("navigation-pane");
         mainContainer.getStyleClass().add("main-container");
