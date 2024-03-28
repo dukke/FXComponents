@@ -70,8 +70,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
             }
 
             if (get()) {
-                setExpanded(false);
-                arrowContainer.setRotate(0);
+                collapseWithNoAnimation();
 
                 if (isChildSelected()) {
                     fireOnMenuAction();
@@ -132,6 +131,12 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
         titleContainer.getStyleClass().add("item-container");
         arrowContainer.getStyleClass().add("arrow-container");
         arrow.getStyleClass().add("arrow");
+    }
+
+    private void collapseWithNoAnimation() {
+        setExpanded(false);
+        arrowContainer.setRotate(0);
+        setTransition(0);
     }
 
     private void doAnimation() {
@@ -232,11 +237,11 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
         double prefHeight = 0;
 
         prefHeight += titleContainer.prefHeight(width);
-        if (isExpanded()) {
+        if (!isShrunken()) {
             prefHeight += childItemsContainer.prefHeight(width) * getTransition();
         }
 
-        return  prefHeight;
+        return prefHeight;
     }
 
     @Override
