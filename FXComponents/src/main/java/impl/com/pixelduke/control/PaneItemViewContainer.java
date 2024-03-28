@@ -49,7 +49,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
     private DoubleProperty transition;
 
-    private final BooleanProperty selected = new SimpleBooleanProperty(false) {
+    private final BooleanProperty showSelected = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {
             pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, get());
@@ -91,6 +91,8 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     private double transitionStartValue;
     private Timeline timeline;
     private RotateTransition rotateTransition;
+
+    private PaneItemViewContainer parentItemContainer;
 
     public PaneItemViewContainer(Menu menu, boolean shrunken) {
         this.menu = menu;
@@ -189,7 +191,7 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
     private boolean isChildSelected() {
         for (PaneItemView paneItemView : items) {
-            if (paneItemView.isSelected()) {
+            if (paneItemView.isShowSelected()) {
                 return true;
             }
         }
@@ -222,10 +224,12 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
             if (change.wasAdded()) {
                 for (PaneItemView addedItem : change.getAddedSubList()) {
                     childItemsContainer.getChildren().add(addedItem.getNodeRepresentation());
+                    addedItem.setParentItemView(this);
                 }
             }
             if (change.wasRemoved()) {
                 for (PaneItemView removedItem : change.getRemoved()) {
+                    removedItem.setParentItemView(null);
                     childItemsContainer.getChildren().remove(removedItem.getNodeRepresentation());
                 }
             }
@@ -304,11 +308,11 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
 
     // selected
     @Override
-    public void setSelected(boolean value) { selected.set(value); }
+    public void setShowSelected(boolean value) { showSelected.set(value); }
     @Override
-    public boolean isSelected() { return selected.get(); }
+    public boolean isShowSelected() { return showSelected.get(); }
     @Override
-    public BooleanProperty selectedProperty() { return selected; }
+    public BooleanProperty showSelectedProperty() { return showSelected; }
 
     // -- shrunken
     @Override
@@ -325,5 +329,11 @@ public class PaneItemViewContainer extends Region implements PaneItemView {
     // -- expanded
     public boolean isExpanded() { return expanded.get(); }
     public BooleanProperty expandedProperty() { return expanded; }
-    public void setExpanded(boolean expanded) { this.expanded.set(expanded);}
+    public void setExpanded(boolean expanded) { this.expanded.set(expanded); }
+
+    // -- parent
+    @Override
+    public PaneItemViewContainer getParentItemView() { return parentItemContainer; }
+    @Override
+    public void setParentItemView(PaneItemViewContainer parent) { this.parentItemContainer = parent; }
 }

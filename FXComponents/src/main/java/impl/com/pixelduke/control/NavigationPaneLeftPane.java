@@ -185,10 +185,17 @@ public class NavigationPaneLeftPane extends Region {
         PaneItemView targetPaneItemView = menuItemVisualRepresentation.get(target);
 
         if (previouslySelectedMenuItem != null) {
-            previouslySelectedMenuItem.setSelected(false);
+            previouslySelectedMenuItem.setShowSelected(false);
         }
-        previouslySelectedMenuItem = targetPaneItemView;
-        targetPaneItemView.setSelected(true);
+
+        if (targetPaneItemView.isShrunken() && targetPaneItemView.getParentItemView() != null) {
+            PaneItemViewContainer paneItemViewContainer = targetPaneItemView.getParentItemView();
+            paneItemViewContainer.setShowSelected(true);
+            previouslySelectedMenuItem = paneItemViewContainer;
+        } else {
+            targetPaneItemView.setShowSelected(true);
+            previouslySelectedMenuItem = targetPaneItemView;
+        }
 
         selectedMenuItem.set(target);
     }

@@ -20,9 +20,9 @@ interface PaneItemView {
     void setGraphic(Node graphic);
 
     // -- selected
-    void setSelected(boolean value);
-    boolean isSelected();
-    BooleanProperty selectedProperty();
+    void setShowSelected(boolean value);
+    boolean isShowSelected();
+    BooleanProperty showSelectedProperty();
 
     // -- shrunken
     boolean isShrunken();
@@ -31,4 +31,8 @@ interface PaneItemView {
 
     // -- node representation
     Node getNodeRepresentation();
+
+    // -- parent
+    PaneItemViewContainer getParentItemView();
+    void setParentItemView(PaneItemViewContainer parent);
 }

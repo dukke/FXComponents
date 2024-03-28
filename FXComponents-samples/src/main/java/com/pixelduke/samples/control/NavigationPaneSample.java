@@ -17,7 +17,6 @@ import javafx.stage.StageStyle;
 
 public class NavigationPaneSample  extends Application {
     public static void main(String[] args) {
-        System.setProperty("prism.forceUploadingPainter", "true");
         launch(args);
     }
 

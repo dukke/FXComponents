@@ -18,7 +18,7 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
     private final MenuItem menuItem;
     private final Label label = new Label();
 
-    private final BooleanProperty selected = new SimpleBooleanProperty(false) {
+    private final BooleanProperty showSelected = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {
             pseudoClassStateChanged(SELECTED_PSEUDOCLASS_STATE, get());
@@ -37,6 +37,8 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
     };
 
     private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
+
+    private PaneItemViewContainer parentItemContainer;
 
     public PaneItemViewLeaf(MenuItem menuItem, boolean shrunken) {
         this.menuItem = menuItem;
@@ -83,13 +85,19 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
     public void setGraphic(Node graphic) { label.setGraphic(graphic); }
 
     // -- selected
-    public boolean isSelected() { return selected.get(); }
+    public boolean isShowSelected() { return showSelected.get(); }
     @Override
-    public BooleanProperty selectedProperty() { return selected; }
-    public void setSelected(boolean selected) { this.selected.set(selected); }
+    public BooleanProperty showSelectedProperty() { return showSelected; }
+    public void setShowSelected(boolean selected) { this.showSelected.set(selected); }
 
     // -- node representation
     @Override
     public Node getNodeRepresentation() { return this; }
+
+    // -- parent
+    @Override
+    public PaneItemViewContainer getParentItemView() { return parentItemContainer; }
+    @Override
+    public void setParentItemView(PaneItemViewContainer parent) { this.parentItemContainer = parent; }
 
 }

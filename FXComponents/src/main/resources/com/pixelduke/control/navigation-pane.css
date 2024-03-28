@@ -1,3 +1,8 @@
+.navigation-pane {
+    -shrunken-width: 50px;
+    -unshrunken-width: 320px;
+}
+
 .navigation-pane > .main-container > .top-container {
     -fx-pref-height: 20px;
 }
@@ -11,11 +16,6 @@
     -fx-border-radius: 8px 0 0 0;
 
     -fx-padding: 25px 0 0 25px;
-}
-
-.navigation-pane {
-    -shrunken-width: 50px;
-    -unshrunken-width: 320px;
 }
 
 .navigation-pane > .main-container > .pane > .top-container > .hamburger-container {
