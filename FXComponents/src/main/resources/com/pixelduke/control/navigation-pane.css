@@ -46,14 +46,14 @@
 .navigation-pane > .main-container > .pane .item-container,
 .navigation-pane > .main-container > .pane > .top-container > .hamburger-container > .button {
     -fx-background-color: transparent;
-    -fx-background-radius: 6px 6px 6px 6px !important;
+    -fx-background-radius: 6px 6px 6px 6px;
 }
 
 .navigation-pane > .main-container > .pane .item-container:hover,
 .navigation-pane > .main-container > .pane .navigation-pane-item.item-container:selected,
 .navigation-pane > .main-container > .pane .navigation-pane-item.container-item-view:selected > .item-container,
 .navigation-pane > .main-container > .pane .hamburger-container .button.light:hover {
-    -fx-background-color: rgba(200, 200, 200, 0.2) !important;
+    -fx-background-color: rgba(180, 180, 180, 0.2);
 }
 
 .navigation-pane > .main-container > .pane .item-container > .label {
