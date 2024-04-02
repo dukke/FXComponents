@@ -34,6 +34,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    api 'com.pixelduke:FXSkins:1.0.0'
+}
+
 jar {
     manifest {
         attributes( 'Implementation-Title':     project.name,

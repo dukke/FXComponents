@@ -1,8 +1,6 @@
 package com.pixelduke.samples.control;
 
 import com.pixelduke.control.NavigationPane;
-import com.pixelduke.transit.Style;
-import com.pixelduke.transit.TransitTheme;
 import com.pixelduke.window.ThemeWindowManagerFactory;
 import com.pixelduke.window.Win11ThemeWindowManager;
 import javafx.application.Application;
@@ -59,8 +57,6 @@ public class NavigationPaneSample  extends Application {
         stage.setTitle("NavigationPane Sample");
         stage.initStyle(StageStyle.UNIFIED);
         stage.getIcons().add(new Image(NavigationPaneSample.class.getResourceAsStream("fxcomponents_icon.jpg")));
-
-        new TransitTheme(scene, Style.LIGHT);
 
         navigationPane.selectedMenuItemProperty().addListener(observable -> {
             MenuItem selectedMenuItem = navigationPane.getSelectedMenuItem();
