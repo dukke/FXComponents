@@ -19,7 +19,7 @@
 }
 
 .navigation-pane > .main-container > .pane > .top-container > .hamburger-container {
-    -fx-padding: 0 0 0 6px;
+    -fx-padding: 0 0 0 9px;
 }
 
 .navigation-pane > .main-container > .pane > .top-container .menu-items-container,
