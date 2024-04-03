@@ -103,6 +103,10 @@
     -fx-background-color: transparent, transparent;
 }
 
+.navigation-pane > .main-container .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
 .navigation-pane > .main-container .scroll-pane .corner {
     -fx-background-radius: 0 0 0 0;
     -fx-background-color: #e9e9e9;

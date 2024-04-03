@@ -9,6 +9,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -51,7 +52,9 @@ public class NavigationPaneSample  extends Application {
 
         navigationPane.setContent(new SampleUI());
 
-        Scene scene = new Scene(navigationPane, 1250, 630);
+        StackPane root = new StackPane(navigationPane);
+        root.setStyle("-fx-background-color: transparent; ");
+        Scene scene = new Scene(root, 1250, 630);
         scene.setFill(Color.TRANSPARENT);
 
         stage.setTitle("NavigationPane Sample");
