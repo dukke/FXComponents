@@ -21,10 +21,41 @@ public class NavigationPaneSample  extends Application {
 
     @Override
     public void start(Stage stage) {
-        System.setProperty("prism.lcdtext", "false");
+        System.setProperty("prism.lcdtext", "false"); // nicer fonts (not necessary for this sample)
 
         NavigationPane navigationPane = new NavigationPane();
 
+        addItems(navigationPane);
+        navigationPane.setContent(new SampleUI());
+
+        navigationPane.selectedMenuItemProperty().addListener(observable -> {
+            MenuItem selectedMenuItem = navigationPane.getSelectedMenuItem();
+            if (selectedMenuItem != null) {
+                System.out.println("Selected menu item changed to -> " + selectedMenuItem.getText());
+            }
+        });
+
+        stage.setTitle("NavigationPane Sample");
+        stage.getIcons().add(new Image(NavigationPaneSample.class.getResourceAsStream("fxcomponents_icon.jpg")));
+
+        // Setup conditions for background blur to show through
+        StackPane root = new StackPane(navigationPane);
+        root.setStyle("-fx-background-color: transparent; "); // needs to be transparent so window background blur shows through
+        Scene scene = new Scene(root, 1250, 630);
+        scene.setFill(Color.TRANSPARENT); // needs to be transparent so window background blur shows through
+
+        stage.initStyle(StageStyle.UNIFIED); // for some reason this StageStyle needs to be applied for window background blur to work
+
+        // Show stage
+        stage.setScene(scene);
+        stage.show();
+
+        // The following is what enables background blur through the use of the FXThemes library (stage must be showing at this point)
+        Win11ThemeWindowManager win11ThemeWindowManager = (Win11ThemeWindowManager) ThemeWindowManagerFactory.create();
+        win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA_ALT);
+    }
+
+    private static void addItems(NavigationPane navigationPane) {
         // menu items
         ImageView menuItem1Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-home-20.png").toExternalForm());
         navigationPane.getMenuItems().add(new MenuItem("Home", menuItem1Graphic));
@@ -49,29 +80,5 @@ public class NavigationPaneSample  extends Application {
         navigationPane.getFooterMenuItems().add(new MenuItem("Account", footerMenuItem1));
         ImageView footerMenuItem2 = new ImageView(NavigationPaneSample.class.getResource("icons8-help-20.png").toExternalForm());
         navigationPane.getFooterMenuItems().add(new MenuItem("Help", footerMenuItem2));
-
-        navigationPane.setContent(new SampleUI());
-
-        StackPane root = new StackPane(navigationPane);
-        root.setStyle("-fx-background-color: transparent; ");
-        Scene scene = new Scene(root, 1250, 630);
-        scene.setFill(Color.TRANSPARENT);
-
-        stage.setTitle("NavigationPane Sample");
-        stage.initStyle(StageStyle.UNIFIED);
-        stage.getIcons().add(new Image(NavigationPaneSample.class.getResourceAsStream("fxcomponents_icon.jpg")));
-
-        navigationPane.selectedMenuItemProperty().addListener(observable -> {
-            MenuItem selectedMenuItem = navigationPane.getSelectedMenuItem();
-            if (selectedMenuItem != null) {
-                System.out.println("Selected menu item changed to -> " + selectedMenuItem.getText());
-            }
-        });
-
-        stage.setScene(scene);
-        stage.show();
-
-        Win11ThemeWindowManager win11ThemeWindowManager = (Win11ThemeWindowManager) ThemeWindowManagerFactory.create();
-        win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA_ALT);
     }
 }
