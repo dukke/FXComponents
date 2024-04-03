@@ -80,5 +80,8 @@ public class NavigationPaneSample  extends Application {
         navigationPane.getFooterMenuItems().add(new MenuItem("Account", footerMenuItem1));
         ImageView footerMenuItem2 = new ImageView(NavigationPaneSample.class.getResource("icons8-help-20.png").toExternalForm());
         navigationPane.getFooterMenuItems().add(new MenuItem("Help", footerMenuItem2));
+
+        // settings
+        navigationPane.setSettingsVisible(true);
     }
 }

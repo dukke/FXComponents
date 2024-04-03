@@ -18,12 +18,16 @@ import javafx.scene.control.Control;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class NavigationPane extends Control {
+    public static final String DEFAULT_SETTINGS_ICON_URL = NavigationPaneSkin.class.getResource("settings_icon.png").toExternalForm();
+
+    private final MenuItem settingsMenuItem;
     private final ObservableList<MenuItem> menuItems = FXCollections.observableArrayList();
     private final ObservableList<MenuItem> footerMenuItems = FXCollections.observableArrayList();
 
@@ -80,6 +84,20 @@ public class NavigationPane extends Control {
 
     /*=========================================================================*
      *                                                                         *
+     *                        CONSTRUCTORS                                     *
+     *                                                                         *
+     *=========================================================================*/
+
+    public NavigationPane() {
+        this(new MenuItem("Settings", new ImageView(DEFAULT_SETTINGS_ICON_URL)));
+    }
+
+    public NavigationPane(MenuItem settingsMenuItem) {
+        this.settingsMenuItem = settingsMenuItem;
+    }
+
+    /*=========================================================================*
+     *                                                                         *
      *                         PROPERTIES                                      *
      *                                                                         *
      *=========================================================================*/
@@ -119,6 +137,9 @@ public class NavigationPane extends Control {
     public double getUnshrunkenWidth() { return unshrunkenWidth.get(); }
     public DoubleProperty unshrunkenWidthProperty() { return unshrunkenWidth; }
     public void setUnshrunkenWidth(double unshrunkenWidth) { this.unshrunkenWidth.set(unshrunkenWidth); }
+
+    // -- settings menu item
+    public MenuItem getSettingsMenuItem() { return settingsMenuItem; }
 
     /**************************************************************************
      *                                                                        *

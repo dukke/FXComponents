@@ -35,7 +35,7 @@ public class NavigationPaneLeftPane extends Region {
     private static final PseudoClass SHRUNKEN_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("shrunken");
 
     private static final String HAMBURGER_ICON_URL = NavigationPaneSkin.class.getResource("hamburger_icon.png").toExternalForm();
-    private static final String SETTINGS_ICON_URL = NavigationPaneSkin.class.getResource("settings_icon.png").toExternalForm();
+
 
     private final VBox topContainer = new VBox();
     private final VBox footerContainer = new VBox();
@@ -86,11 +86,13 @@ public class NavigationPaneLeftPane extends Region {
         hamburgerContainer.getChildren().add(hamburguerButton);
 
         // settings item
-        ImageView settingsImageView = new ImageView(SETTINGS_ICON_URL);
-        MenuItem settingsMenuItem = new MenuItem("Settings", settingsImageView);
+        MenuItem settingsMenuItem = navigationPane.getSettingsMenuItem();
         settingsItem = createItemRepresentation(settingsMenuItem);
         addMenuItemListener(settingsMenuItem);
         settingsContainer.getChildren().add(settingsItem.getNodeRepresentation());
+
+        navigationPane.settingsVisibleProperty().addListener(observable -> updateSettingsVisibility());
+        updateSettingsVisibility();
 
 
         getChildren().addAll(topContainer, footerContainer, settingsContainer);
@@ -112,6 +114,12 @@ public class NavigationPaneLeftPane extends Region {
         footerContainer.getStyleClass().add("footer-items-container");
         settingsContainer.getStyleClass().add("settings-container");
         hamburguerButton.getStyleClass().add("hamburger");
+    }
+
+    private void updateSettingsVisibility() {
+        settingsContainer.setManaged(navigationPane.isSettingsVisible());
+        settingsContainer.setVisible(navigationPane.isSettingsVisible());
+        requestLayout();
     }
 
     private void onHamburgerButtonClicked(MouseEvent mouseEvent) {
@@ -237,7 +245,9 @@ public class NavigationPaneLeftPane extends Region {
         double availableWidth = width - leftPadding - rightPadding;
         double availableHeight = height - topPadding - bottomPadding;
 
-        double settingsContainerHeight = settingsContainer.prefHeight(availableWidth);
+        boolean settingsVisible = this.navigationPane.isSettingsVisible();
+
+        double settingsContainerHeight = settingsVisible ? settingsContainer.prefHeight(availableWidth) : 0;
         double footerContainerHeight = footerContainer.prefHeight(availableWidth);
 
         // topContainer
@@ -248,8 +258,10 @@ public class NavigationPaneLeftPane extends Region {
         footerContainer.resizeRelocate(0, footerContainerY, availableWidth, footerContainerHeight);
 
         // settings container
-        double settingsContainerY = availableHeight - settingsContainerHeight;
-        settingsContainer.resizeRelocate(0, settingsContainerY, availableWidth, settingsContainerHeight);
+        if (settingsVisible) {
+            double settingsContainerY = availableHeight - settingsContainerHeight;
+            settingsContainer.resizeRelocate(0, settingsContainerY, availableWidth, settingsContainerHeight);
+        }
     }
 
     // -- selected menu item
