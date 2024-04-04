@@ -1,9 +1,19 @@
 # FXComponents
 A collection of controls for JavaFX.
 
+- NavigationPane  
+
+![NavigationPane control](NavigationPane.jpg)
+
+- List Builder
+
 ![FXComponents List Builder Control](List-Builder.gif)
 
+- Blocking Progress Bar  
+
 ![Blocking-ProgressBar.gif](Blocking-ProgressBar.gif)
+
+-  Reordable ListView
 
 ![Reordable-ListView.gif](Reordable-ListView.gif)
 
@@ -18,7 +28,7 @@ Here are examples for Gradle and Maven (replace version number with the version 
 
 #### Gradle
 ```groovy
-implementation 'com.pixelduke:FXComponents:1.1.2'
+implementation 'com.pixelduke:FXComponents:1.6'
 ```
 
 #### Maven
@@ -26,14 +36,14 @@ implementation 'com.pixelduke:FXComponents:1.1.2'
 <dependency>
     <groupId>com.pixelduke</groupId>
     <artifactId>FXComponents</artifactId>
-    <version>1.1.2</version>
+    <version>1.6</version>
 </dependency>
 ```
 
 ## Source code
 The FXComponents-samples subproject has samples that you can run and check out how to use FXComponents.
 
-The code is being compiled on Java 11 and JavaFX 11. However, it should work on the latest Java and JavaFX version.
+The code of the FXComponents library is being compiled on Java 21 and JavaFX 22.
 
 ## Pull Requests (PR)
 We welcome contributions via PR.  
