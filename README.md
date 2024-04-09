@@ -1,7 +1,7 @@
 # FXComponents
 A collection of controls for JavaFX.
 
-- NavigationPane  
+- Navigation Pane  
 
 ![NavigationPane control](NavigationPane.jpg)
 
@@ -41,9 +41,18 @@ implementation 'com.pixelduke:FXComponents:1.6'
 ```
 
 ## Source code
+The code of the FXComponents library is being compiled on Java 21 and JavaFX 22.
+
 The FXComponents-samples subproject has samples that you can run and check out how to use FXComponents.
 
-The code of the FXComponents library is being compiled on Java 21 and JavaFX 22.
+## Running the sample demos
+To run the demos,  enter the following command in the Command Prompt / Terminal, inside the project directory:
+```
+gradlew run
+```
+Be sure to have your JAVA_HOME environment variable correctly set.  
+To choose which of the demos to run, change the "gradle.build" script file inside "FXComponents-samples" folder and uncomment which 
+Application derived class you'd like to execute.
 
 ## Pull Requests (PR)
 We welcome contributions via PR.  
