@@ -75,6 +75,11 @@ library better.
 Also, and if you allow it, to showcase example uses.    
 Seeing this library get used also always motivates me to keep working on it.
 
+## Acknowledgements
+Kudos to:
+- Icons8 for the icons used in the sample apps, visit https://icons8.com for more information.
+- Pexels for sample photos: https://www.pexels.com/
+
 ## License
 FXComponents uses the ['GNU General Public License, version 2, with the Classpath Exception'](https://openjdk.java.net/legal/gplv2+ce.html)
 
