@@ -14,7 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class NavigationPaneSample  extends Application {
+public class NavigationPaneSample extends Application {
     public static void main(String[] args) {
         launch(args);
     }
@@ -52,7 +52,7 @@ public class NavigationPaneSample  extends Application {
 
         // The following is what enables background blur through the use of the FXThemes library (stage must be showing at this point)
         Win11ThemeWindowManager win11ThemeWindowManager = (Win11ThemeWindowManager) ThemeWindowManagerFactory.create();
-        win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA_ALT);
+        win11ThemeWindowManager.setWindowBackdrop(stage, Win11ThemeWindowManager.Backdrop.MICA);
     }
 
     private static void addItems(NavigationPane navigationPane) {
@@ -69,7 +69,7 @@ public class NavigationPaneSample  extends Application {
         ImageView menuItem5Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-rescan-document-20.png").toExternalForm());
         menu.getItems().add(new MenuItem("Rescan document", menuItem5Graphic));
         ImageView menuItem6Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-insert-page-20.png").toExternalForm());
-        menu.getItems().add(new MenuItem("Add page", menuItem6Graphic));
+        menu.getItems().add(new MenuItem("Add page"));
         navigationPane.getMenuItems().add(menu);
         // menu items
         ImageView menuItem7Graphic = new ImageView(NavigationPaneSample.class.getResource("icons8-upload-20.png").toExternalForm());

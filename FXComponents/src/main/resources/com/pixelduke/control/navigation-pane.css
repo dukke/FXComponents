@@ -81,6 +81,10 @@
 }
 
 .navigation-pane > .main-container > .pane .container-item-view > .child-items-container > .item-container {
+    -fx-padding: 7px 10px 7px 2.583333em;
+}
+
+.navigation-pane > .main-container > .pane .container-item-view > .child-items-container > .item-container:has-graphic {
     -fx-padding: 7px 10px 7px 2.333333em;
 }
 

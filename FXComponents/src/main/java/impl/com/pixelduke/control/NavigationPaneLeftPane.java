@@ -87,7 +87,8 @@ public class NavigationPaneLeftPane extends Region {
 
         // settings item
         MenuItem settingsMenuItem = navigationPane.getSettingsMenuItem();
-        settingsItem = createItemRepresentation(settingsMenuItem);
+        settingsItem = createSettingsItem(settingsMenuItem);
+
         addMenuItemListener(settingsMenuItem);
         settingsContainer.getChildren().add(settingsItem.getNodeRepresentation());
 
@@ -114,6 +115,26 @@ public class NavigationPaneLeftPane extends Region {
         footerContainer.getStyleClass().add("footer-items-container");
         settingsContainer.getStyleClass().add("settings-container");
         hamburguerButton.getStyleClass().add("hamburger");
+    }
+
+    private PaneItemView createSettingsItem(MenuItem settingsMenuItem) {
+        final PaneItemView settingsItem;
+        settingsItem = new PaneItemViewLeaf(settingsMenuItem, shrunken.get());
+
+        // Add listeners - we add listeners instead of binding so the icon can easily be overridden for example through CSS
+        settingsMenuItem.textProperty().addListener(observable -> {
+            settingsItem.setTitle(settingsMenuItem.getText());
+        });
+        settingsItem.setTitle(settingsMenuItem.getText());
+        settingsMenuItem.graphicProperty().addListener(observable -> {
+            settingsItem.setGraphic(settingsMenuItem.getGraphic());
+        });
+
+
+        settingsItem.setGraphic(settingsMenuItem.getGraphic());
+        menuItemVisualRepresentation.put(settingsMenuItem, settingsItem);
+
+        return settingsItem;
     }
 
     private void updateSettingsVisibility() {

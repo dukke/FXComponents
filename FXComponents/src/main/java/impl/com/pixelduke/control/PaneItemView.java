@@ -1,13 +1,12 @@
 package impl.com.pixelduke.control;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 
 interface PaneItemView {
     PseudoClass SELECTED_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("selected");
+    PseudoClass HAS_GRAPHIC_PSEUDOCLASS_STATE = PseudoClass.getPseudoClass("has-graphic");
 
     // -- title
     String getTitle();
@@ -18,6 +17,9 @@ interface PaneItemView {
     Node getGraphic();
     ObjectProperty<Node> graphicProperty();
     void setGraphic(Node graphic);
+
+    boolean getHasGraphic();
+    ReadOnlyBooleanProperty hasGraphicProperty();
 
     // -- selected
     void setShowSelected(boolean value);

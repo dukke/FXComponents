@@ -1,10 +1,6 @@
 package impl.com.pixelduke.control;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -36,6 +32,21 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
         }
     };
 
+    private final ReadOnlyBooleanWrapper hasGraphic = new ReadOnlyBooleanWrapper() {
+        {
+            updatePseudoClass();
+        }
+
+        @Override
+        protected void invalidated() {
+            updatePseudoClass();
+        }
+
+        private void updatePseudoClass() {
+            pseudoClassStateChanged(HAS_GRAPHIC_PSEUDOCLASS_STATE, get());
+        }
+    };
+
     private final ObjectProperty<Runnable> onSelectionRequested = new SimpleObjectProperty<>();
 
     private PaneItemViewContainer parentItemContainer;
@@ -43,6 +54,8 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
     public PaneItemViewLeaf(MenuItem menuItem, boolean shrunken) {
         this.menuItem = menuItem;
         this.shrunken.set(shrunken);
+
+        hasGraphic.bind(graphicProperty().isNotNull());
 
         getStyleClass().addAll("navigation-pane-item", "item-container");
 
@@ -83,6 +96,11 @@ public class PaneItemViewLeaf extends HBox implements PaneItemView {
     public ObjectProperty<Node> graphicProperty() { return label.graphicProperty(); }
     @Override
     public void setGraphic(Node graphic) { label.setGraphic(graphic); }
+
+    // -- has graphic
+    @Override
+    public ReadOnlyBooleanProperty hasGraphicProperty() { return hasGraphicProperty();}
+    public boolean getHasGraphic() { return hasGraphic.get(); }
 
     // -- selected
     public boolean isShowSelected() { return showSelected.get(); }
