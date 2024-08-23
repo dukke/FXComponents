@@ -7,7 +7,7 @@ plugins {
 
 sourceCompatibility = JavaVersion.VERSION_17
 
-version = '1.6'
+version = '1.6.2'
 
 ext {
     projectDescription = 'A collection of new controls for JavaFX.'
