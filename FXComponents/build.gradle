@@ -79,10 +79,10 @@ publishing {
         maven {
             def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-            url version.toString().endsWith("SNAPSHOT")? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                username System.getenv('MAVEN_USERNAME')
-                password System.getenv('MAVEN_PASSWORD')
+            url = version.toString().endsWith("SNAPSHOT")? snapshotsRepoUrl : releasesRepoUrl
+            credentials (PasswordCredentials) {
+                username = System.getenv('OSSRH_TOKEN_USERNAME')
+                password = System.getenv('OSSRH_TOKEN_PASSWORD')
             }
         }
     }
