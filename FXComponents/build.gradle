@@ -26,6 +26,7 @@ ext {
 javafx {
     version = "22"
     modules = [ 'javafx.controls' ]
+    configuration = 'compileOnly'
 }
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -35,7 +36,7 @@ repositories {
 }
 
 dependencies {
-    api 'com.pixelduke:FXSkins:1.0.0'
+    api 'com.pixelduke:FXSkins:1.1.5'
 }
 
 jar {
